@@ -68,6 +68,7 @@ class Storage:
         os.mkdir(os.path.join(".datagit", "stage"))
         os.mkdir(os.path.join(".datagit", "programs"))
         os.mkdir(os.path.join(".datagit", "versions"))
+        os.mkdir(os.path.join(".datagit", "remote"))
 
     def save_file(self, file_name: str) -> str:
         """
@@ -194,6 +195,21 @@ class Storage:
     def delete_version(self, versionID: int) -> None:
         # TODO: actually remove saved files
         pass
+
+    def save_remote(self, url:str) -> None:
+        remote_info_file = os.path.join(utils.get_working_dir(), ".datagit", "remote", "url")
+        with open(remote_info_file, "w") as rf:
+            rf.write(str)
+    
+    def load_remote(self):
+        remote_info_file = os.path.join(utils.get_working_dir(), ".datagit", "remote", "url")
+        if not os.path.exists(remote_info_file):
+            return None
+
+        with open(remote_info_file, "r") as rf:
+            url = rf.readline()
+            return url
+            
 
 
 storage = Storage()
