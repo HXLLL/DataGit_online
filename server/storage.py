@@ -73,7 +73,7 @@ class Storage:
         shutil.copytree(dir1, dst)
         return id
 
-    def get_transform(self, id: int) -> str:
+    def get_transform(self, repo_id: str, id: int) -> str:
         """
         given a transform program's id, return its relative path
         return -- relative path to working dir's root
