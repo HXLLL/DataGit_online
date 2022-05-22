@@ -34,16 +34,17 @@ class Storage:
         with open(repo_path, 'wb') as repo_file:
             pickle.dump(repo, repo_file)
 
-    def save_file(self, file_name: str) -> str:
+    def save_file(self, filename: str, data: bytes) -> None:
         """
-        save a file
-        file_name -- absolute path of the file to save
+        保存文件
+        filename: 文件名，即哈希值
+        data: 文件数据
+        调用者需要保证该文件原本没有保存
         """
+        file_path = os.path.join(self.root_path, 'data', filename)
+        with open(file_path, 'wb') as fout:
+            fout.write(data)
 
-        h = utils.get_hash(file_name)
-        dst = os.path.join(self.root_path, 'data', h)
-        shutil.copy(file_name, dst)
-        return h
 
     def get_file(self, hash_value: str) -> str:
         """
