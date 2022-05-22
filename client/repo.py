@@ -211,11 +211,21 @@ class Repo:
         res.reverse()
         return res
 
-    def load_from_dict(self, Dict) -> None:
-        self.init_version   = Dict['init_version']
-        self.versions       = Dict['versions']
-        self.saved_version  = Dict['saved_version']
-        self.HEAD           = Dict['HEAD']
-        self.detached_head  = Dict['detached_head']
-        self.branch_map     = Dict['branch_map']
-        self.version_map    = Dict['version_map']
+    def load_from_dict(self, init_dict) -> None:
+        self.init_version   = Version(None, None, None, None)
+        self.init_version.load_from_dict(init_dict['init_version'])
+
+        self.versions       = []
+        for item in init_dict['versions']:
+            tmp = Version(None, None, None, None)
+            self.versions.append(tmp.load_from_dict(item))
+        
+        self.saved_version  = init_dict['saved_version']
+        self.HEAD           = init_dict['HEAD']
+        self.detached_head  = init_dict['detached_head']
+        self.branch_map     = init_dict['branch_map']
+
+        self.version_map    = dict()
+        for item in init_dict.keys():
+            tmp = Version(None, None, None, None)
+            self.version_map[item] = tmp.load_from_dict(init_dict[item])
