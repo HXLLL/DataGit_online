@@ -24,22 +24,6 @@ def func_init(args: argparse.Namespace) -> None:
     controller.init()
 
 
-def func_update(args: argparse.Namespace) -> None:
-    controller.update(args.dir)
-
-
-def func_add(args: argparse.Namespace) -> None:
-    controller.add(args.src, args.dst)
-
-
-def func_transform(args: argparse.Namespace) -> None:
-    controller.transform(args.dir, args.entry, args.m, args.s, args.d)
-
-
-def func_commit(args: argparse.Namespace) -> None:
-    controller.commit(args.m)
-
-
 def func_checkout(args: argparse.Namespace) -> None:
     if (args.v == None) and (args.b == False):
         raise ValueError("You should give -v or -b, not neither of them!")
@@ -99,27 +83,6 @@ def main():
 
     parser_init = subparsers.add_parser('init', help='initialize a repo')
     parser_init.set_defaults(func=func_init)
-
-    parser_update = subparsers.add_parser('update', help='update a directory')
-    parser_update.add_argument('dir', type=str, help='dir to update')
-    parser_update.set_defaults(func=func_update)
-
-    parser_update = subparsers.add_parser('add', help='add a directory')
-    parser_update.add_argument('src', type=str, help='from src')
-    parser_update.add_argument('dst', type=str, help='copy to dst')
-    parser_update.set_defaults(func=func_add)
-
-    parser_transform = subparsers.add_parser('transform', help='transform the dataset')
-    parser_transform.add_argument('dir', type=str, help='dir of the promgramme')
-    parser_transform.add_argument('entry', type=str, help='dir of the entry promgramme')
-    parser_transform.add_argument('-m', type=str, required=True, help='message of the promgramme')
-    parser_transform.add_argument('-s', action='store_true', help='if one to one ')
-    parser_transform.add_argument('-d', default='.', type=str, help='the dir that will be transformed')
-    parser_transform.set_defaults(func=func_transform)
-
-    parser_commit = subparsers.add_parser('commit', help='commit the dataset')
-    parser_commit.add_argument('-m', type=str, required=True, help='commit message')
-    parser_commit.set_defaults(func=func_commit)
 
     parser_checkout = subparsers.add_parser('checkout', help='checkout the dataset')
     parser_checkout.add_argument('-v', type=int, help='checkout dataset of the version ID')

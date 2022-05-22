@@ -7,35 +7,19 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from blob import Blob
     from repo import Repo
-    from stage import Stage
 
 
 class Storage:
     def __init__(self):
-        pass
+        self.root_path = 'C:\\datagit'
 
-    def load_repo(self) -> 'Repo':
+    def load_repo(self, repo_id) -> 'Repo':
         """
-        load repo from .datagit/repo
+        load repo from root_path/repo_id/.datagit/repo
         """
-        wd = utils.get_working_dir()
-        if wd is None:
-            return None
-        repo_path = os.path.join(wd, '.datagit', 'repo', 'repo.pk')
+        repo_path = os.path.join(self.root_path, repo_id, '.datagit', 'repo', 'repo.pk')
         with open(repo_path, 'rb') as repo_file:
             return pickle.load(repo_file)
-        return None
-
-    def load_stage(self) -> 'Stage':
-        """
-        load stage from .datagit/repo
-        """
-        wd = utils.get_working_dir()
-        if wd is None:
-            return None
-        stage_path = os.path.join(wd, '.datagit', 'stage', 'stage.pk')
-        with open(stage_path, 'rb') as stage_file:
-            return pickle.load(stage_file)
         return None
 
     def save_repo(self, repo: 'Repo') -> None:
@@ -45,14 +29,6 @@ class Storage:
         repo_path = os.path.join(utils.get_working_dir(), '.datagit', 'repo', 'repo.pk')
         with open(repo_path, 'wb') as repo_file:
             pickle.dump(repo, repo_file)
-
-    def save_stage(self, stage: 'Stage') -> None:
-        """
-        save stage to .datagit/stage
-        """
-        stage_path = os.path.join(utils.get_working_dir(), '.datagit', 'stage', 'stage.pk')
-        with open(stage_path, 'wb') as stage_file:
-            pickle.dump(stage, stage_file)
 
     def create_repo(self) -> None:
         """

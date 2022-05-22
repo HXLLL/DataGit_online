@@ -1,7 +1,7 @@
 from typing import Tuple, List, Union, Dict
+from client.repo import VersionID
 from storage import storage
 from version import Version
-from stage import Stage
 from typing import List
 import os
 import utils
@@ -17,36 +17,19 @@ class Repo:
         self.branch_map: dict[str, int] = {'main': 1}  # map branch name to version id
         self.version_map: dict[int, Version] = {1: self.init_version}  # map hash to version
 
+        self.__id = -1  # repo需要知道自己的id。注意初始化的时候还要改一下
+        self.__parent_id = None  # fork的id
+    
+    def get_id(self) -> str:
+        return self.__id
+    
+    def get_parent_id(self) -> str:
+        return self.__parent_id
+
     def init(self) -> None:
         storage.create_repo()
         storage.save_empty_version(1)
         self.saved_version = [1]
-
-    def __new_version_id(self) -> int:
-        return len(self.versions) + 1
-
-    def commit(self, stage: Stage, message: str) -> None:
-        """
-        commit the stage, create a version with the stage
-        save a stage to the repo's data structures
-        """
-
-        pid = None
-        if not self.detached_head:
-            b = self.HEAD
-            assert type(b).__name__ == 'str'
-            pid = self.branch_map[b]
-        else:
-            raise ValueError("can't commit in detached HEAD mode")
-
-        id = self.__new_version_id()
-        v = stage.commit(pid, id, message)
-        self.version_map[id] = v
-        self.versions.append(v)
-        if not self.detached_head:
-            b = self.HEAD
-            assert type(b).__name__ == 'str'
-            self.branch_map[b] = id
 
     def __find_saved_dataSet(self, dest_version: Version) -> Tuple[Version, List[Version]]:
         """
@@ -172,15 +155,6 @@ class Repo:
     def log(self) -> str:
         return self.__find_log(self.init_version, "")
 
-    def status(self) -> str:
-        cur_branch = ""
-        if self.detached_head:
-            cur_branch = "Detached HEAD, at version %d" % self.HEAD
-        else:
-            cur_branch = "HEAD at branch %s" % self.HEAD
-
-        stage = storage.load_stage()
-        return cur_branch + "\n" + stage.status()
 
     def branch(self, branch_name) -> None:
         if branch_name in self.branch_map:
@@ -193,4 +167,10 @@ class Repo:
 
     def is_detached_head(self) -> bool:
         return self.detached_head
-
+    
+    def comp(self, versions) -> List[VersionID]:
+        Ans = []
+        for item in versions:
+            if item not in self.version_map:
+                Ans.append(item)
+        return Ans
