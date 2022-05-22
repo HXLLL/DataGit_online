@@ -90,7 +90,7 @@ def log() -> str:
 def branch(name: str) -> None:
     repo = storage.load_repo()
 
-    if repo is None or stage is None:
+    if repo is None:
         raise ValueError("Not in a valid repository")
     if len(name) > 255:
         raise ValueError("Branch name too long")
@@ -98,3 +98,8 @@ def branch(name: str) -> None:
     repo.branch(name)
 
     storage.save_repo(repo)
+
+def diff_version(repo_name:str, version_list:str):
+    repo = storage.load_repo(repo_name)
+    return repo.comp(version_list)
+

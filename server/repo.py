@@ -1,11 +1,12 @@
 from typing import Tuple, List, Union, Dict
-from client.repo import VersionID
+# from client.repo import VersionID
 from storage import storage
 from version import Version
 from typing import List
 import os
 import utils
 
+VersionID=int
 
 class Repo:
     def __init__(self):
@@ -168,9 +169,23 @@ class Repo:
     def is_detached_head(self) -> bool:
         return self.detached_head
     
-    def comp(self, versions) -> List[VersionID]:
+    def comp(self, version_list) -> List[VersionID]:
         Ans = []
-        for item in versions:
+        for item in version_list:
             if item not in self.version_map:
                 Ans.append(item)
         return Ans
+
+    def to_dict(self):
+        List=[]
+        List.append(('init_version', self.init_version))
+        List.append(('versions', self.versions))
+        List.append(('saved_version', self.saved_version))
+        List.append(('HEAD', self.HEAD))
+        List.append(('detached_head', self.detached_head))
+        List.append(('branch_map', self.branch_map))
+        List.append(('version_map', self.version_map))
+        List.append(('id', self.__id))
+        List.append(('parent_id', self.__parent_id))
+
+        return dict(List)

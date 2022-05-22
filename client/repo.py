@@ -210,3 +210,12 @@ class Repo:
         res.append(end.id)
         res.reverse()
         return res
+
+    def load_from_dict(self, Dict) -> None:
+        self.init_version   = Dict['init_version']
+        self.versions       = Dict['versions']
+        self.saved_version  = Dict['saved_version']
+        self.HEAD           = Dict['HEAD']
+        self.detached_head  = Dict['detached_head']
+        self.branch_map     = Dict['branch_map']
+        self.version_map    = Dict['version_map']
