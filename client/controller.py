@@ -1,8 +1,10 @@
 import os
+import pstats
 from storage import storage
 from repo import Repo
 from stage import Stage
 from version import Version
+import remote
 
 
 def trans_path(dir: str) -> str:
@@ -223,3 +225,46 @@ def branch(name: str) -> None:
 
     storage.save_repo(repo)
     storage.save_stage(stage)
+
+def remote_add(url:str) -> None:
+    repo = storage.load_repo()
+    stage = storage.load_stage()
+
+    if repo is None or stage is None:
+        raise ValueError("Not in a valid repository")
+
+    remote.remote_add(url)
+
+    storage.save_repo(repo)
+    storage.save_stage(stage)
+
+def push_b(branch_name:str) -> None:
+    repo = storage.load_repo()
+    stage = storage.load_stage()
+
+    if repo is None:
+        raise ValueError("Not in a valid repository")
+    
+    if stage is None:
+        raise ValueError("stage is not empty")
+    
+    if branch_name not in repo.branch_map:
+        raise ValueError("branch not exist")
+    
+    url = storage.load_remote()
+    if url is None:
+        raise ValueError("this repo have not bind with a remote repo")
+
+    remote.push(repo, branch_name, url)
+
+    storage.save_repo(repo)
+    storage.save_stage(stage)
+
+def push_a() -> None:
+    pass
+
+def clone(url:str) -> None:
+    remote.clone(url)
+
+def get(url:str, vid) -> None:
+    remote.get(url, vid)
