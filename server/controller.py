@@ -98,9 +98,9 @@ def get_repo(a: bool, name: str) -> str:
 
 
 def create(name: str) -> None:
-    path = storage.create_repo(name)
-    os.chdir(path)
-    os.system("datagit init")
+    repo = Repo()
+    storage.create_repo(name)
+    storage.save_repo(name, repo)
 
 
 def fork(old_name: str, new_name: str) -> None:
@@ -108,8 +108,6 @@ def fork(old_name: str, new_name: str) -> None:
     repo = storage.find_repo(new_name)
     repo.parent_id_init(old_name)
     storage.save_repo(new_name, repo)
-
-    storage.save_repo(repo)
 
 def diff_version(repo_name:str, version_list:str):
     repo = storage.load_repo(repo_name)
