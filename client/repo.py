@@ -2,27 +2,27 @@ from typing import Tuple, List, Union, Dict
 from storage import storage
 from version import Version
 from stage import Stage
-from typing import List
 import os
 import utils
 
+VersionID = int
 
 class Repo:
     def __init__(self):
         self.init_version = Version(None, 1, [], 'init')
         self.versions: List[Version] = [self.init_version]
-        self.saved_version: List[int] = []
-        self.HEAD: Union[str, int] = 'main'
+        self.saved_version: List[VersionID] = []
+        self.HEAD: Union[str, VersionID] = 'main'
         self.detached_head: bool = False
-        self.branch_map: dict[str, int] = {'main': 1}  # map branch name to version id
-        self.version_map: dict[int, Version] = {1: self.init_version}  # map hash to version
+        self.branch_map: dict[str, VersionID] = {'main': 1}  # map branch name to version id
+        self.version_map: dict[VersionID, Version] = {1: self.init_version}  # map hash to version
 
     def init(self) -> None:
         storage.create_repo()
         storage.save_empty_version(1)
         self.saved_version = [1]
 
-    def __new_version_id(self) -> int:
+    def __new_version_id(self) -> VersionID:
         return len(self.versions) + 1
 
     def commit(self, stage: Stage, message: str) -> None:
@@ -63,7 +63,7 @@ class Repo:
         route.reverse()
         return v, route
 
-    def checkout(self, dst: Union[int, str], to_branch: bool) -> None:  # op指示VersionID or branch_name
+    def checkout(self, dst: Union[VersionID, str], to_branch: bool) -> None:  # op指示VersionID or branch_name
         """
         given a version ID or branch name, replace contents of the working dir with files of that branch
         """
@@ -91,7 +91,7 @@ class Repo:
         for m in modify_sequence:
             m.apply(working_dir)
 
-    def save(self, VersionID: int) -> None:
+    def save(self, VersionID: VersionID) -> None:
         """
         save a version.
         """
@@ -114,7 +114,7 @@ class Repo:
         storage.save_version(dest_version.id, tmp_dir)
         self.saved_version.append(VersionID)
 
-    def unsave(self, VersionID: int) -> None:
+    def unsave(self, VersionID: VersionID) -> None:
         """
         unsave a version.
         """
@@ -193,3 +193,20 @@ class Repo:
 
     def is_detached_head(self) -> bool:
         return self.detached_head
+
+    def get_init_version_id(self) -> VersionID:
+        return self.init_version.id
+
+    def get_version_list(self, _start: VersionID, _end: VersionID) -> List[VersionID]:
+        assert _start in self.version_map
+        assert _end in self.version_map
+        start = self.version_map[_start]
+        end = self.version_map[_end]
+        res = []
+        while end.id != start.id:
+            assert end.id != self.init_version.id
+            res.append(end.id)
+            end = end.parent
+        res.append(end.id)
+        res.reverse()
+        return res
