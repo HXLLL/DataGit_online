@@ -123,5 +123,3 @@ def fork(old_name: str, new_name: str) -> None:
     repo = storage.find_repo(new_name)
     repo.update_info(old_name)
 
-=======
->>>>>>> c007445483e42f066ad05944fb18a189958be1d0
