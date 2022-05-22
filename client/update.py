@@ -110,3 +110,15 @@ class Update(Modify):
             + '\n        '.join(map(file2str, self.__remove_list[:10])) \
             + ('\n        ......' if len(self.__remove_list) > 10 else '')
         return res
+
+    def load_hash(self) -> List:
+        hash_list = []
+        for item in self.__add_list:
+            if isinstance(item[1], Directory):
+                x = item[1].unfold("")
+                for y in x:
+                    hash_list += [y[1].get_hash()]
+            else:
+                hash_list += [item[1].get_hash()]
+        return hash_list
+
