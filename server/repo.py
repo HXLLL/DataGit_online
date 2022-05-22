@@ -34,7 +34,6 @@ class Repo:
         return Ans
 
     def to_dict(self):
-        lst=[]
         init_version_tmp = self.init_version.to_dict()
         versions_tmp = []
         for item in self.versions:

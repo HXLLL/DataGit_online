@@ -7,17 +7,10 @@ import utils
 
 
 class Transform(Modify):
-    def __init__(self, isMap: int, script_dir: str, script_entry: str, script_working_dir: str, message: str) -> None:
-        super().__init__()
-        self.__isMap = isMap
-        self.__script_dir = script_dir  # 绝对
-        self.__script_entry = script_entry  # 相对
-        self.__script_working_dir = script_working_dir  # 相对
-        self.__id: int = storage.save_transform(script_dir)
-        self.__message = message
 
     def to_dict(self):
         tmp_dict = {
+            'type' : 'transform',
             'isMap' : self.__isMap,
             'script_dir' : self.__script_dir, 
             'script_entry' : self.__script_entry, 
@@ -27,4 +20,12 @@ class Transform(Modify):
         }
 
         return tmp_dict
+    
+    def load_from_dict(self, init_dict):
+        self.__isMap = init_dict['isMap']
+        self.__script_dir = init_dict['script_dir']
+        self.__script_entry = init_dict['script_entry']
+        self.__script_working_dir = init_dict['script_working_dir']
+        self.__id = init_dict['id']
+        self.__message = init_dict['message']
         

@@ -1,5 +1,7 @@
 from typing import List
 from modify import Modify
+from update import Update
+from transform import Transform
 from typing import List
 
 
@@ -17,7 +19,7 @@ class Version():
     def to_dict(self):
         modify_sequence_tmp = []
         for item in self.modify_sequence:
-            modify_sequence_tmp.append(item.to_dict)
+            modify_sequence_tmp.append(item.to_dict())
         
         tmp_dict = {
             'id' : self.id,
@@ -27,3 +29,17 @@ class Version():
         }
 
         return tmp_dict
+    
+    def load_from_dict(self, init_dict):
+        self.id = init_dict['id']
+        self.parent = init_dict['parent']
+        self.modify_sequence = []
+        for item in init_dict['modmify_sequence']:
+            if item['type'] == 'update':
+                tmp = Update()
+                self.modify_sequence.append(tmp.load_from_dict(item))
+            else:
+                tmp = Transform()
+                self.modify_sequence.append(tmp.load_from_dict(item))
+        
+        self.message = init_dict['message']
