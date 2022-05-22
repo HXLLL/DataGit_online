@@ -12,9 +12,9 @@ if TYPE_CHECKING:
 
 class Storage:
     def __init__(self):
-        self.root_path = 'C:\\datagit'
+        self.root_path = 'C:\\datagit'  # 暂时先写死
 
-    def load_repo(self, repo_id) -> 'Repo':
+    def load_repo(self, repo_id: str) -> 'Repo':
         """
         load repo from root_path/repo_id/.datagit/repo
         """
@@ -23,59 +23,33 @@ class Storage:
             return pickle.load(repo_file)
         return None
 
-    def load_stage(self) -> 'Stage':
-        """
-        load stage from .datagit/repo
-        要删掉
-        """
-        wd = utils.get_working_dir()
-        if wd is None:
-            return None
-        stage_path = os.path.join(wd, '.datagit', 'stage', 'stage.pk')
-        with open(stage_path, 'rb') as stage_file:
-            return pickle.load(stage_file)
-        return None
-
     def save_repo(self, repo: 'Repo') -> None:
         """
         save repo to .datagit/repo
         """
-        repo_path = os.path.join(utils.get_working_dir(), '.datagit', 'repo', 'repo.pk')
+        repo_path = os.path.join(self.root_path, repo.get_id(), '.datagit',
+                                 'repo', 'repo.pk')
         with open(repo_path, 'wb') as repo_file:
             pickle.dump(repo, repo_file)
-
-    def save_stage(self, stage: 'Stage') -> None:
-        """
-        save stage to .datagit/stage
-        """
-        stage_path = os.path.join(utils.get_working_dir(), '.datagit', 'stage', 'stage.pk')
-        with open(stage_path, 'wb') as stage_file:
-            pickle.dump(stage, stage_file)
 
     def create_repo(self) -> None:
         """
         Initialize a repo in current dir, 
         create all required directories for a repo
         """
-        if utils.get_working_dir() != None:
-            # 仓库已存在，可能需要输出错误信息
-            raise ValueError("Already in a repo")
         os.mkdir(".datagit")
-        os.mkdir(os.path.join(".datagit", "data"))
         os.mkdir(os.path.join(".datagit", "repo"))
-        os.mkdir(os.path.join(".datagit", "stage"))
         os.mkdir(os.path.join(".datagit", "programs"))
         os.mkdir(os.path.join(".datagit", "versions"))
 
     def save_file(self, file_name: str) -> str:
         """
-        save a file \n
+        save a file
         file_name -- absolute path of the file to save
         """
 
-        wd = utils.get_working_dir()
         h = utils.get_hash(file_name)
-        dst = os.path.join(wd, ".datagit", "data", h)
+        dst = os.path.join(self.root_path, 'data', h)
         shutil.copy(file_name, dst)
         return h
 
@@ -84,18 +58,15 @@ class Storage:
         given a file's hash value, return its path.
         return -- relative path to working dir's root
         """
+        return os.path.join(self.root_path, 'data', "%s" % hash_value)
 
-        return os.path.join(".datagit", "data", "%s" % hash_value)
-
-    def save_transform(self, dir1: str) -> int:
+    def save_transform(self, repo_id: str, dir1: str) -> int:
         """
         save a transform program to the repo and assign an ID to it
         dir1 -- the program's absolute dir
         return -- the assigned id
         """
-
-        wd = utils.get_working_dir()
-        program_dir = os.path.join(wd, ".datagit", "programs")
+        program_dir = os.path.join(self.root_path, repo_id, ".datagit", "programs")
         cnt = len(os.listdir(program_dir))
         id = cnt + 1
         dst = os.path.join(program_dir, "%d" % id)
