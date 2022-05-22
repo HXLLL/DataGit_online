@@ -1,0 +1,1 @@
+@cmd /c "python rotate.py %~1"

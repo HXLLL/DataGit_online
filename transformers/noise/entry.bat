@@ -1,0 +1,1 @@
+@cmd /c "python noise.py %~1"

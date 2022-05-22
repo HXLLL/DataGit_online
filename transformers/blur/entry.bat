@@ -1,0 +1,1 @@
+@cmd /c "python blur.py %~1"
