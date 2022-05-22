@@ -96,5 +96,7 @@ class Storage:
     def get_repo_name(self) -> List[str]:
         return os.listdir(os.path.join(self.root_path, 'repo'))
 
+    def exist_file(self, hash: str) -> bool:
+        return os.path.exists(os.path.join(self.root_path, 'data', hash))
 
 storage = Storage()

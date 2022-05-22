@@ -2,7 +2,9 @@ import os
 from storage import storage
 from repo import Repo
 from version import Version
+from typing import List
 
+VersionID=int
 
 def trans_path(dir: str) -> str:
     res = ''
@@ -109,7 +111,9 @@ def fork(old_name: str, new_name: str) -> None:
     repo.parent_id_init(old_name)
     storage.save_repo(new_name, repo)
 
-def diff_version(repo_name:str, version_list:str):
+def diff_version(repo_name:str, version_list:str) -> List[VersionID]:
     repo = storage.load_repo(repo_name)
     return repo.comp(version_list)
 
+def diff_files(hash_list: List[str]) -> List[str]:
+    return list(filter(storage.exist_file, set(hash_list)))
