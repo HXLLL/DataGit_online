@@ -10,6 +10,7 @@ class Transform(Modify):
     
     def to_dict(self):
         tmp_dict = {
+            'type': 'transform',
             'isMap' : self.__isMap,
             'script_dir' : self.__script_dir, 
             'script_entry' : self.__script_entry, 

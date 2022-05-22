@@ -1,6 +1,6 @@
 from modify import Modify
 from directory import Directory
-from typing import List
+from typing import List, Dict
 from storage import storage
 import os
 import utils
@@ -50,3 +50,24 @@ class Transform(Modify):
 
     def info(self) -> str:
         return f"    transform in directory[{self.__script_working_dir}]: {self.__message}"
+
+    def to_dict(self):
+        tmp_dict = {
+            'type': 'transform',
+            'isMap' : self.__isMap,
+            'script_dir' : self.__script_dir, 
+            'script_entry' : self.__script_entry, 
+            'script_working_dir' : self.__script_working_dir,
+            'id' : self.__id,
+            'message' : self.__message
+        }
+
+        return tmp_dict
+    
+    def load_from_dict(self, d: Dict):
+        self.__isMap = d['isMap']
+        self.__script_dir = d['script_dir']
+        self.__script_entry = d['script_entry']
+        self.__script_working_dir = d['script_working_dir']
+        self.__id = d['id']
+        self.__message = d['message']

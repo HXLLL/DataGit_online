@@ -14,9 +14,9 @@ class Update(Modify):
     
     def to_dict(self):
         tmp_dict = {
+            'type' : 'update',
             'add_list' : self.__add_list,
             'remove_list' : self.__remove_list
         }
 
         return tmp_dict
-    
