@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from blob import Blob
     from repo import Repo
-    from stage import Stage
 
 
 class Storage:
