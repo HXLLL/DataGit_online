@@ -11,9 +11,9 @@ if TYPE_CHECKING:
 
 class Storage:
     def __init__(self):
-        self.root_path = 'C:\\datagit'
+        self.root_path = 'C:\\datagit'  # 暂时先写死
 
-    def load_repo(self, repo_id) -> 'Repo':
+    def load_repo(self, repo_id: str) -> 'Repo':
         """
         load repo from root_path/repo_id/.datagit/repo
         """
@@ -22,11 +22,12 @@ class Storage:
             return pickle.load(repo_file)
         return None
 
-    def save_repo(self, repo: 'Repo') -> None:
+    def save_repo(self, repo_id: str, repo: 'Repo') -> None:
         """
         save repo to .datagit/repo
         """
-        repo_path = os.path.join(utils.get_working_dir(), '.datagit', 'repo', 'repo.pk')
+        repo_path = os.path.join(
+            self.root_path, repo_id, '.datagit', 'repo', 'repo.pk')
         with open(repo_path, 'wb') as repo_file:
             pickle.dump(repo, repo_file)
 
@@ -35,25 +36,19 @@ class Storage:
         Initialize a repo in current dir, 
         create all required directories for a repo
         """
-        if utils.get_working_dir() != None:
-            # 仓库已存在，可能需要输出错误信息
-            raise ValueError("Already in a repo")
         os.mkdir(".datagit")
-        os.mkdir(os.path.join(".datagit", "data"))
         os.mkdir(os.path.join(".datagit", "repo"))
-        os.mkdir(os.path.join(".datagit", "stage"))
         os.mkdir(os.path.join(".datagit", "programs"))
         os.mkdir(os.path.join(".datagit", "versions"))
 
     def save_file(self, file_name: str) -> str:
         """
-        save a file \n
+        save a file
         file_name -- absolute path of the file to save
         """
 
-        wd = utils.get_working_dir()
         h = utils.get_hash(file_name)
-        dst = os.path.join(wd, ".datagit", "data", h)
+        dst = os.path.join(self.root_path, 'data', h)
         shutil.copy(file_name, dst)
         return h
 
@@ -62,18 +57,15 @@ class Storage:
         given a file's hash value, return its path.
         return -- relative path to working dir's root
         """
+        return os.path.join(self.root_path, 'data', "%s" % hash_value)
 
-        return os.path.join(".datagit", "data", "%s" % hash_value)
-
-    def save_transform(self, dir1: str) -> int:
+    def save_transform(self, repo_id: str, dir1: str) -> int:
         """
         save a transform program to the repo and assign an ID to it
         dir1 -- the program's absolute dir
         return -- the assigned id
         """
-
-        wd = utils.get_working_dir()
-        program_dir = os.path.join(wd, ".datagit", "programs")
+        program_dir = os.path.join(self.root_path, repo_id, ".datagit", "programs")
         cnt = len(os.listdir(program_dir))
         id = cnt + 1
         dst = os.path.join(program_dir, "%d" % id)
@@ -93,9 +85,9 @@ class Storage:
         create a temp dir
         return -- absolute path to the temp dir
         !!! currently only support one temp dir at a time
+        现在这个文件夹创建在根目录/tmp
         """
-        wd = utils.get_working_dir()
-        tmp_dir = os.path.join(wd, ".datagit", "tmp")
+        tmp_dir = os.path.join(self.root_path, ".datagit", "tmp")
         if os.path.isdir(tmp_dir):
             shutil.rmtree(tmp_dir)
         os.mkdir(tmp_dir)
@@ -105,7 +97,6 @@ class Storage:
         """
         dir is absolute path
         """
-        wd = utils.get_working_dir()
         for name, f in d.get_files().items():
             if isinstance(f, Blob):
                 h = f.get_hash()
@@ -121,55 +112,55 @@ class Storage:
             else:
                 raise "Error type in directory"
 
-    def save_directory(self, d: Directory, dir: str) -> None:
-        """
-        dir is absolute path
-        """
-        for name, f in d.get_files().items():
-            self.save_file(os.path.join(dir, name))
+    # def save_directory(self, d: Directory, dir: str) -> None:
+    #     """
+    #     dir is absolute path
+    #     """
+    #     for name, f in d.get_files().items():
+    #         self.save_file(os.path.join(dir, name))
 
-        for name, f in d.get_dirs().items():
-            self.save_directory(f, os.path.join(dir, name))
+    #     for name, f in d.get_dirs().items():
+    #         self.save_directory(f, os.path.join(dir, name))
 
-    def update_workingdir(self, versionID: int, dir: str) -> None:
-        wd = utils.get_working_dir()
-        saved_version_dir = os.path.join(
-            wd, ".datagit", "versions", "%d.pk" % versionID)
-        directory = None
-        with open(saved_version_dir, "rb") as f:
-            directory = pickle.load(f)
-        for d in os.listdir(dir):
-            f_path = os.path.join(dir, d)
-            if os.path.isdir(f_path) and d != '.datagit':
-                shutil.rmtree(f_path)
-            elif d != '.datagit':
-                os.remove(f_path)
-        self.recover_directory(directory, dir)
+    # def update_workingdir(self, repo_id: str, versionID: int, dir: str) -> None:
+    #     # versionID是已经save的
+    #     saved_version_dir = os.path.join(
+    #         self.root_path, repo_id, ".datagit", "versions", "%d.pk" % versionID)
+    #     directory = None
+    #     with open(saved_version_dir, "rb") as f:
+    #         directory = pickle.load(f)
+    #     for d in os.listdir(dir):
+    #         f_path = os.path.join(dir, d)
+    #         if os.path.isdir(f_path) and d != '.datagit':
+    #             shutil.rmtree(f_path)
+    #         elif d != '.datagit':
+    #             os.remove(f_path)
+    #     self.recover_directory(directory, dir)
 
-    def save_version(self, versionID: int, dir: str) -> None:
-        d = Directory()
-        d.construct(dir)
-        self.save_directory(d, dir)
+    # def save_version(self, versionID: int, dir: str) -> None:
+    #     d = Directory()
+    #     d.construct(dir)
+    #     self.save_directory(d, dir)
 
-        wd = utils.get_working_dir()
-        saved_version_dir = os.path.join(
-            wd, ".datagit", "versions", "%d.pk" % versionID)
-        with open(saved_version_dir, "wb") as f:
-            pickle.dump(d, f)
+    #     wd = utils.get_working_dir()
+    #     saved_version_dir = os.path.join(
+    #         wd, ".datagit", "versions", "%d.pk" % versionID)
+    #     with open(saved_version_dir, "wb") as f:
+    #         pickle.dump(d, f)
 
-    def save_empty_version(self, versionID: int) -> None:
-        _, name = os.path.split(os.getcwd())
-        d = Directory(name)
+    # def save_empty_version(self, versionID: int) -> None:
+    #     _, name = os.path.split(os.getcwd())
+    #     d = Directory(name)
 
-        wd = os.getcwd()
-        saved_version_dir = os.path.join(
-            wd, ".datagit", "versions", "%d.pk" % versionID)
-        with open(saved_version_dir, "wb") as f:
-            pickle.dump(d, f)
+    #     wd = os.getcwd()
+    #     saved_version_dir = os.path.join(
+    #         wd, ".datagit", "versions", "%d.pk" % versionID)
+    #     with open(saved_version_dir, "wb") as f:
+    #         pickle.dump(d, f)
 
-    def delete_version(self, versionID: int) -> None:
-        # TODO: actually remove saved files
-        pass
+    # def delete_version(self, versionID: int) -> None:
+    #     # TODO: actually remove saved files
+    #     pass
 
 
 storage = Storage()
