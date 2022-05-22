@@ -202,3 +202,4 @@ class Repo:
 
     def is_detached_head(self) -> bool:
         return self.detached_head
+

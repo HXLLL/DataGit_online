@@ -5,6 +5,8 @@ import controller
 import platform
 from filelock import Timeout, FileLock
 
+VersionID = int
+
 def acquire_lock() -> FileLock:
     lockdir = "C:\\tmp"
     if platform.system() == 'Linux':
@@ -76,6 +78,24 @@ def func_status(args: argparse.Namespace) -> None:
 def func_branch(args: argparse.Namespace):
     controller.branch(args.name)
 
+def func_remote(args: argparse.Namespace):
+    controller.remote_add(args.url)
+
+def func_push(args: argparse.Namespace):
+    if args.b == None and args.a == None:
+        raise ValueError("You should give -v or -b, not neither of them!")
+    if args.b != None and args.a != None:
+        raise ValueError("You should give -v or -b, not both of them!")
+    if args.b != None:
+        controller.push_b(args.b)
+    else:
+        controller.push_a()
+
+def func_clone(args: argparse.Namespace):
+    controller.clone(args.url)
+
+def func_get(args: argparse.Namespace):
+    controller.get(args.url, args.vid)
 
 def main():
     parser = argparse.ArgumentParser(prog="datagit")
@@ -130,6 +150,24 @@ def main():
     parser_branch = subparsers.add_parser('branch', help='create a new branch')
     parser_branch.add_argument('name', type=str, help='name of the branch')
     parser_branch.set_defaults(func=func_branch)
+
+    parser_remote = subparsers.add_parser('remote add', help='add a new remote repo')
+    parser_remote.add_argument('url', type=str, required=True, help='url of remote repo') 
+    parser_remote.set_defaults(func=func_remote)
+
+    parser_push = subparsers.add_parser('push', help='push a new branch or the whole repo to a remote repo')
+    parser_push.add_argument('-b', type=str, help='the branch you want to push')
+    parser_push.add_argument('-a', action='store_true', help='push the whole repo')
+    parser_remote.set_defaults(func=func_push)
+
+    parser_clone = subparsers.add_parser('clone', help='clone a new repo from a remote repo')
+    parser_clone.add_argument('url', type=str, required=True, help='url of remote repo')
+    parser_clone.set_defaults(func=func_clone)
+
+    parser_get = subparsers.add_parser('get', help='get a dataset from a remote repo')
+    parser_get.add_argument('url', type=str, required=True, help='url of remote repo') 
+    parser_get.add_argument('vid', type=VersionID, required=True, help='version id')
+    parser_get.set_defaults(func=func_get) 
 
     args = parser.parse_args(sys.argv[1:])  # the first argument is main.py
     if not 'func' in args:
