@@ -223,3 +223,26 @@ def branch(name: str) -> None:
 
     storage.save_repo(repo)
     storage.save_stage(stage)
+
+
+def get_repo(a: bool, name: str) -> str:
+    if a:
+        all_repo = storage.get_repo_name()
+        return all_repo
+    else:
+        repo = storage.find_repo(name)
+        repo_info = repo.get_info()
+        return repo_info
+
+
+def create(name: str) -> None:
+    path = storage.create_repo(name)
+    os.chdir(path)
+    os.system("datagit init")
+
+
+def fork(old_name: str, new_name: str) -> None:
+    storage.copy_repo(old_name, new_name)
+    repo = storage.find_repo(new_name)
+    repo.update_info(old_name)
+

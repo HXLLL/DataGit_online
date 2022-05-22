@@ -41,9 +41,9 @@ def func_commit(args: argparse.Namespace) -> None:
 
 
 def func_checkout(args: argparse.Namespace) -> None:
-    if (args.v == None) and (args.b == None):
+    if (args.v == None) and (args.b == False):
         raise ValueError("You should give -v or -b, not neither of them!")
-    if (args.v != None) and (args.b != None):
+    if (args.v != None) and (args.b != True):
         raise ValueError("You should give -v or -b, not both of them!")
     if args.v != None:
         controller.checkout_v(args.v)
@@ -75,6 +75,22 @@ def func_status(args: argparse.Namespace) -> None:
 
 def func_branch(args: argparse.Namespace):
     controller.branch(args.name)
+
+
+def func_get_repo(args: argparse.Namespace) -> None:
+    if (args.a == None) and (args.v == None):
+        raise ValueError("You should give one of [-a] or [-v version_name], not none of them")
+    if (args.a != None) and (args.v != None):
+        raise ValueError("You should give one of [-a] or [-v version_name], not both of them")
+    print(controller.get_repo(args.a, args.v))
+
+
+def func_create(args: argparse.Namespace) -> None:
+    controller.create(args.name)
+
+
+def func_fork(args: argparse.Namespace) -> None:
+    controller.fork(args.old_name, args.new_name)
 
 
 def main():
@@ -130,6 +146,21 @@ def main():
     parser_branch = subparsers.add_parser('branch', help='create a new branch')
     parser_branch.add_argument('name', type=str, help='name of the branch')
     parser_branch.set_defaults(func=func_branch)
+
+    parser_get_repo = subparsers.add_parser('get_repo', help='get information of repos')
+    parser_get_repo.add_argument('-a', action='store_true', help='if one to one ')
+    parser_get_repo.add_argument('-v', type=str, help='name of the repo that you need to learn')
+    parser_get_repo.set_defaults(func=func_get_repo)
+
+    parser_create = subparsers.add_parser('create', help='create a new repo')
+    parser_create.add_argument('name', type=str, help='name of the repo that you create')
+    parser_create.set_defaults(func=func_create)
+
+    parser_fork = subparsers.add_parser('fork', help='fork a repo');
+    parser_fork.add_argument('old_name', type=str, help='name of the old repo')
+    parser_fork.add_argument('new_name', type=str, help='name of the new repo')
+    parser_fork.set_defaults(func=func_fork)
+
 
     args = parser.parse_args(sys.argv[1:])  # the first argument is main.py
     if not 'func' in args:
