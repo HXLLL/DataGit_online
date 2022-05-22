@@ -1,4 +1,5 @@
 from typing import Tuple, List, Union, Dict
+from client.repo import VersionID
 from storage import storage
 from version import Version
 from stage import Stage
@@ -193,4 +194,10 @@ class Repo:
 
     def is_detached_head(self) -> bool:
         return self.detached_head
-
+    
+    def comp(self, versions) -> List[VersionID]:
+        Ans = []
+        for item in versions:
+            if item not in self.version_map:
+                Ans.append(item)
+        return Ans
