@@ -1,10 +1,12 @@
-from typing import TYPE_CHECKING, Tuple, Dict
+from typing import TYPE_CHECKING, Tuple, Dict, List
 import storage
 import socket
 import pickle
 import urllib.parse
 if TYPE_CHECKING:
     from repo import Repo
+    from version import Version
+from update import Update
 import pdb
 
 def remote_add(url:str) -> None:
@@ -42,6 +44,10 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
         1. 'push'
         2. branch name
         3. uri
+        4. version list from init to the branch
+        5. wait the server's response required version
+        6. send all files of required version
+        7. wait the server's response required file
     """
     import pdb
     pdb.set_trace()
@@ -50,7 +56,24 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
     f.write("push\n".encode('utf-8'))
     f.write(f"{branch}\n".encode('utf-8'))
     f.write(f"{uri}\n".encode('utf-8'))
+
     vs = repo.get_version_list(branch)
     pickle.dump(vs, f)
     f.flush()
-    dlist = pickle.load(f)
+    required_version: List['Version'] = pickle.load(f)
+
+    flist = []
+    for v in required_version:
+        flist.extend(v.get_files()) # TODO
+    pickle.dump(flist, f)
+    f.flush()
+    required_files: List[str] = pickle.load(f)
+
+    for f in required_files:
+        f = storage.get_file()      # TODO
+        # TODO: open f, read it, and send it to server
+        f.flush()
+    
+    for v in required_version:
+        pickle.dump(v.to_dict(), f)
+    f.flush()

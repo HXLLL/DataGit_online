@@ -21,4 +21,3 @@ class Version():
             if isinstance(item, Update):
                 hash_list += item.load_hash()
         return hash_list
-    

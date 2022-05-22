@@ -1,12 +1,10 @@
 from typing import Tuple, List, Union, Dict
-# from client.repo import VersionID
+from client.repo import VersionID
 from storage import storage
 from version import Version
 from typing import List
 import os
 import utils
-
-VersionID=int
 
 class Repo:
     def __init__(self):
@@ -36,10 +34,24 @@ class Repo:
         return Ans
 
     def to_dict(self):
-        List=[]
-        List.append(('init_version', self.init_version))
-        List.append(('versions', self.versions))
-        List.append(('saved_version', self.saved_version))
-        List.append(('branch_map', self.branch_map))
-        List.append(('version_map', self.version_map))
-        return dict(List)
+        lst=[]
+        init_version_tmp = self.init_version.to_dict()
+        versions_tmp = []
+        for item in self.versions:
+            versions_tmp.append(item.to_dict())
+        
+        version_map_tmp=dict()
+        for item in self.version_map.keys():
+            version_map_tmp[item] = self.version_map[item].to_dict()
+        
+        tmp_dict = {
+            'init_version' : init_version_tmp,
+            'versions' : versions_tmp,
+            'saved_version' : self.saved_version,
+            'HEAD' : self.HEAD,
+            'detached_head' : self.detached_head,
+            'branch_map' : self.branch_map,
+            'version_map' : version_map_tmp
+        }
+
+        return tmp_dict

@@ -13,3 +13,17 @@ class Version():
         self.parent = parent
         self.modify_sequence = modify_sequence
         self.message = message
+    
+    def to_dict(self):
+        modify_sequence_tmp = []
+        for item in self.modify_sequence:
+            modify_sequence_tmp.append(item.to_dict)
+        
+        tmp_dict = {
+            'id' : self.id,
+            'parent' : self.parent,
+            'modify_sequence' : modify_sequence_tmp,
+            'message' : self.message
+        }
+
+        return tmp_dict
