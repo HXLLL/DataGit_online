@@ -24,26 +24,10 @@ def func_init(args: argparse.Namespace) -> None:
     controller.init()
 
 
-def func_update(args: argparse.Namespace) -> None:
-    controller.update(args.dir)
-
-
-def func_add(args: argparse.Namespace) -> None:
-    controller.add(args.src, args.dst)
-
-
-def func_transform(args: argparse.Namespace) -> None:
-    controller.transform(args.dir, args.entry, args.m, args.s, args.d)
-
-
-def func_commit(args: argparse.Namespace) -> None:
-    controller.commit(args.m)
-
-
 def func_checkout(args: argparse.Namespace) -> None:
-    if (args.v == None) and (args.b == None):
+    if (args.v == None) and (args.b == False):
         raise ValueError("You should give -v or -b, not neither of them!")
-    if (args.v != None) and (args.b != None):
+    if (args.v != None) and (args.b != True):
         raise ValueError("You should give -v or -b, not both of them!")
     if args.v != None:
         controller.checkout_v(args.v)
@@ -77,33 +61,28 @@ def func_branch(args: argparse.Namespace):
     controller.branch(args.name)
 
 
+def func_get_repo(args: argparse.Namespace) -> None:
+    if (args.a == None) and (args.v == None):
+        raise ValueError("You should give one of [-a] or [-v version_name], not none of them")
+    if (args.a != None) and (args.v != None):
+        raise ValueError("You should give one of [-a] or [-v version_name], not both of them")
+    print(controller.get_repo(args.a, args.v))
+
+
+def func_create(args: argparse.Namespace) -> None:
+    controller.create(args.name)
+
+
+def func_fork(args: argparse.Namespace) -> None:
+    controller.fork(args.old_name, args.new_name)
+
+
 def main():
     parser = argparse.ArgumentParser(prog="datagit")
     subparsers = parser.add_subparsers(help="subcommands")
 
     parser_init = subparsers.add_parser('init', help='initialize a repo')
     parser_init.set_defaults(func=func_init)
-
-    parser_update = subparsers.add_parser('update', help='update a directory')
-    parser_update.add_argument('dir', type=str, help='dir to update')
-    parser_update.set_defaults(func=func_update)
-
-    parser_update = subparsers.add_parser('add', help='add a directory')
-    parser_update.add_argument('src', type=str, help='from src')
-    parser_update.add_argument('dst', type=str, help='copy to dst')
-    parser_update.set_defaults(func=func_add)
-
-    parser_transform = subparsers.add_parser('transform', help='transform the dataset')
-    parser_transform.add_argument('dir', type=str, help='dir of the promgramme')
-    parser_transform.add_argument('entry', type=str, help='dir of the entry promgramme')
-    parser_transform.add_argument('-m', type=str, required=True, help='message of the promgramme')
-    parser_transform.add_argument('-s', action='store_true', help='if one to one ')
-    parser_transform.add_argument('-d', default='.', type=str, help='the dir that will be transformed')
-    parser_transform.set_defaults(func=func_transform)
-
-    parser_commit = subparsers.add_parser('commit', help='commit the dataset')
-    parser_commit.add_argument('-m', type=str, required=True, help='commit message')
-    parser_commit.set_defaults(func=func_commit)
 
     parser_checkout = subparsers.add_parser('checkout', help='checkout the dataset')
     parser_checkout.add_argument('-v', type=int, help='checkout dataset of the version ID')
@@ -130,6 +109,21 @@ def main():
     parser_branch = subparsers.add_parser('branch', help='create a new branch')
     parser_branch.add_argument('name', type=str, help='name of the branch')
     parser_branch.set_defaults(func=func_branch)
+
+    parser_get_repo = subparsers.add_parser('get_repo', help='get information of repos')
+    parser_get_repo.add_argument('-a', action='store_true', help='if one to one ')
+    parser_get_repo.add_argument('-v', type=str, help='name of the repo that you need to learn')
+    parser_get_repo.set_defaults(func=func_get_repo)
+
+    parser_create = subparsers.add_parser('create', help='create a new repo')
+    parser_create.add_argument('name', type=str, help='name of the repo that you create')
+    parser_create.set_defaults(func=func_create)
+
+    parser_fork = subparsers.add_parser('fork', help='fork a repo');
+    parser_fork.add_argument('old_name', type=str, help='name of the old repo')
+    parser_fork.add_argument('new_name', type=str, help='name of the new repo')
+    parser_fork.set_defaults(func=func_fork)
+
 
     args = parser.parse_args(sys.argv[1:])  # the first argument is main.py
     if not 'func' in args:
