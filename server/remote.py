@@ -29,19 +29,19 @@ class Handler(socketserver.StreamRequestHandler):
         self.wfile.flush()
 
         file_list = pickle.load(self.rfile)
-        flist = controller.diff_files(file_list) # TODO
+        flist = controller.diff_files(file_list)
         pickle.dump(flist, self.wfile)
         self.wfile.flush()
 
         for f in flist:
             content = pickle.load(self.rfile)
-            storage.save_file()                 # TODO save file content
+            storage.save_file(f, content)
         
         for f in vlist:
             _version: Dict = pickle.load(self.rfile)
             version = Version(None, None, None, None)
             version.load_from_dict(_version)
-            repo.add_version(version)           # TODO: add version
+            controller.add_version(repo_name, version)
 
     def get(self) -> None:
         pass
