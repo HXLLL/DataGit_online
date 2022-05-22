@@ -10,9 +10,7 @@ class Repo:
     def __init__(self):
         self.init_version = Version(None, 1, [], 'init')
         self.versions: List[Version] = [self.init_version]
-        self.saved_version: List[int] = []
-        self.branch_map: dict[str, int] = {'main': 1}  # map branch name to version id
-        self.version_map: dict[int, Version] = {1: self.init_version}  # map hash to version
+        self.version_map: dict[int, Version] = {1: self.init_version}  # map id to version
         self.__parent_id: str = None  # fork的id
 
     def parent_id_init(self, name:str):
@@ -24,7 +22,10 @@ class Repo:
     def init(self) -> None:
         storage.create_repo()
         storage.save_empty_version(1)
-        self.saved_version = [1]
+    
+    def add_version(self, version: Version) -> None:
+        self.versions.append(version)
+        self.version_map[version.id] = version
     
     def comp(self, version_list) -> List[VersionID]:
         Ans = []
@@ -48,9 +49,6 @@ class Repo:
             'init_version' : init_version_tmp,
             'versions' : versions_tmp,
             'saved_version' : self.saved_version,
-            'HEAD' : self.HEAD,
-            'detached_head' : self.detached_head,
-            'branch_map' : self.branch_map,
             'version_map' : version_map_tmp
         }
 

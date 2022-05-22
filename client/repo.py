@@ -221,9 +221,6 @@ class Repo:
             self.versions.append(tmp.load_from_dict(item))
         
         self.saved_version  = init_dict['saved_version']
-        self.HEAD           = init_dict['HEAD']
-        self.detached_head  = init_dict['detached_head']
-        self.branch_map     = init_dict['branch_map']
 
         self.version_map    = dict()
         for item in init_dict.keys():
