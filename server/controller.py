@@ -98,7 +98,6 @@ def branch(name: str) -> None:
     repo.branch(name)
 
     storage.save_repo(repo)
-<<<<<<< HEAD
     storage.save_stage(stage)
 
 
