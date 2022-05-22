@@ -87,20 +87,6 @@ def log() -> str:
     return log_info
 
 
-def branch(name: str) -> None:
-    repo = storage.load_repo()
-
-    if repo is None or stage is None:
-        raise ValueError("Not in a valid repository")
-    if len(name) > 255:
-        raise ValueError("Branch name too long")
-
-    repo.branch(name)
-
-    storage.save_repo(repo)
-    storage.save_stage(stage)
-
-
 def get_repo(a: bool, name: str) -> str:
     if a:
         all_repo = storage.get_repo_name()
@@ -120,5 +106,6 @@ def create(name: str) -> None:
 def fork(old_name: str, new_name: str) -> None:
     storage.copy_repo(old_name, new_name)
     repo = storage.find_repo(new_name)
-    repo.update_info(old_name)
+    repo.parent_id_init(old_name)
+    storage.save_repo(new_name, repo)
 

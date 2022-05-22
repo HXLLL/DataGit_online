@@ -17,11 +17,10 @@ class Repo:
         self.branch_map: dict[str, int] = {'main': 1}  # map branch name to version id
         self.version_map: dict[int, Version] = {1: self.init_version}  # map hash to version
 
-        self.__id = -1  # repo需要知道自己的id。注意初始化的时候还要改一下
-        self.__parent_id = None  # fork的id
-    
-    def get_id(self) -> str:
-        return self.__id
+        self.__parent_id: str = None  # fork的id
+
+    def parent_id_init(self, name:str):
+        self.__parent_id = name
     
     def get_parent_id(self) -> str:
         return self.__parent_id
