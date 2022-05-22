@@ -12,16 +12,13 @@ if TYPE_CHECKING:
 
 class Storage:
     def __init__(self):
-        pass
+        self.root_path = 'C:\\datagit'
 
-    def load_repo(self) -> 'Repo':
+    def load_repo(self, repo_id) -> 'Repo':
         """
-        load repo from .datagit/repo
+        load repo from root_path/repo_id/.datagit/repo
         """
-        wd = utils.get_working_dir()
-        if wd is None:
-            return None
-        repo_path = os.path.join(wd, '.datagit', 'repo', 'repo.pk')
+        repo_path = os.path.join(self.root_path, repo_id, '.datagit', 'repo', 'repo.pk')
         with open(repo_path, 'rb') as repo_file:
             return pickle.load(repo_file)
         return None
@@ -29,6 +26,7 @@ class Storage:
     def load_stage(self) -> 'Stage':
         """
         load stage from .datagit/repo
+        要删掉
         """
         wd = utils.get_working_dir()
         if wd is None:
