@@ -118,7 +118,7 @@ def diff_version(repo_name:str, version_list:str) -> List[VersionID]:
 
 
 def diff_files(hash_list: List[str]) -> List[str]:
-    return list(filter(storage.exist_file, set(hash_list)))
+    return list(filter(lambda x: not storage.exist_file(x), set(hash_list)))
 
 def add_version(repo_name: str, version: Version):
     repo = storage.load_repo(repo_name)
