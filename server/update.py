@@ -14,9 +14,13 @@ class Update(Modify):
     
     def to_dict(self):
         tmp_dict = {
+            'type' : 'update',
             'add_list' : self.__add_list,
             'remove_list' : self.__remove_list
         }
 
         return tmp_dict
-    
+          
+    def load_from_dict(self, init_dict):
+        self.__add_list = init_dict['add_list']
+        self.__remove_list = init_dict['remove_list']

@@ -223,6 +223,6 @@ class Repo:
         self.saved_version  = init_dict['saved_version']
 
         self.version_map    = dict()
-        for item in init_dict.keys():
+        for item in init_dict['version_map'].keys():
             tmp = Version(None, None, None, None)
-            self.version_map[item] = tmp.load_from_dict(init_dict[item])
+            self.version_map[item] = tmp.load_from_dict(init_dict['version_map'][item])

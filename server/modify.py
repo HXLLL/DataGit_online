@@ -15,3 +15,7 @@ class Modify(ABC):
     @abstractmethod
     def to_dict(self):
         pass
+
+    @abstractmethod
+    def load_from_dict(self):
+        pass
