@@ -1,10 +1,10 @@
 import os
-import pstats
-from storage import storage
-from repo import Repo
-from stage import Stage
-from version import Version
-import remote
+
+from client import remote
+from client.storage import storage
+from client.repo import Repo
+from client.stage import Stage
+from client.version import Version
 
 
 def trans_path(dir: str) -> str:

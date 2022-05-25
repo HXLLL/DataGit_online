@@ -1,13 +1,15 @@
-from modify import Modify
-from typing import List, Union, Tuple, Dict
-from storage import storage
-from core.directory import Directory
-from core.blob import Blob
-import core.utils as utils
 import os
 import shutil
-from tqdm import tqdm
 from multiprocessing import Pool
+from typing import List, Union, Tuple, Dict
+
+from tqdm import tqdm
+
+from core import utils
+from core.directory import Directory
+from core.blob import Blob
+from client.modify import Modify
+from client.storage import storage
 
 
 class Update(Modify):

@@ -1,13 +1,13 @@
-from typing import List
-from modify import Modify
-from core.directory import Directory
-from transform import Transform
-from update import Update
-from version import Version
-from typing import Tuple
 import os
-import core.utils as utils
 import shutil
+from typing import List, Tuple
+
+from core import utils
+from core.directory import Directory
+from client.modify import Modify
+from client.transform import Transform
+from client.update import Update
+from client.version import Version
 
 
 class Stage():

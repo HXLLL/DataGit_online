@@ -1,6 +1,6 @@
-import hashlib
-import os.path
+import os
 import signal
+import hashlib
 
 
 def get_working_dir(d = None) -> str:

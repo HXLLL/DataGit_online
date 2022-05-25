@@ -1,13 +1,14 @@
 import os
 import shutil
-from core.directory import Directory
-import core.utils as utils
 import pickle
 from typing import TYPE_CHECKING
+
+from core.directory import Directory
+from core import utils
 if TYPE_CHECKING:
     from core.blob import Blob
-    from repo import Repo
-    from stage import Stage
+    from client.repo import Repo
+    from client.stage import Stage
 
 
 class Storage:

@@ -1,9 +1,10 @@
 import os
-from storage import storage
-from repo import Repo
-from version import Version
 from typing import List
+
 from core.types import VersionID
+from server.storage import storage
+from server.repo import Repo
+from server.version import Version
 
 
 def trans_path(dir: str) -> str:

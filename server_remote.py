@@ -1,22 +1,21 @@
-from typing import TYPE_CHECKING, Dict
-from storage import storage
-import urllib.parse
-from version import Version
-from multiprocessing import Process 
-import socketserver
-import pickle
 import os
 import pathlib
-import controller
+import pickle
+import socketserver
+import urllib.parse
+from multiprocessing import Process 
+from typing import TYPE_CHECKING, Dict
+
+from server import controller
+from server.version import Version
+from server.storage import storage
 if TYPE_CHECKING:
-    from repo import Repo
+    from server.repo import Repo
 
 server_addr = ("localhost", 8887)
 
 class Handler(socketserver.StreamRequestHandler):
     def push(self) -> None:
-        import pdb
-        pdb.set_trace()
         branch = self.rfile.readline().decode("utf-8").strip()
         uri = self.rfile.readline().decode("utf-8").strip()
         l = uri.strip('/').split('/')

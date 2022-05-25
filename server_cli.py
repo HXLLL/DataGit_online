@@ -1,9 +1,12 @@
-import sys
 import os
+import sys
 import argparse
-import controller
 import platform
+
 from filelock import Timeout, FileLock
+
+from server import controller
+
 
 def acquire_lock() -> FileLock:
     lockdir = "C:\\tmp"

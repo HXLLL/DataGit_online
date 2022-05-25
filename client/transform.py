@@ -1,9 +1,10 @@
-from modify import Modify
-from core.directory import Directory
-from typing import List, Dict
-from storage import storage
 import os
-import core.utils as utils
+from typing import List, Dict
+
+from core import utils
+from core.directory import Directory
+from client.modify import Modify
+from client.storage import storage
 
 
 class Transform(Modify):

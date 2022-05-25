@@ -1,10 +1,12 @@
-from typing import Tuple, List, Union, Dict
-from storage import storage
-from version import Version
-from stage import Stage
 import os
-import core.utils as utils
+from typing import Tuple, List, Union, Dict
+
+from core import utils
 from core.types import VersionID
+from client.storage import storage
+from client.version import Version
+from client.stage import Stage
+
 
 class Repo:
     def __init__(self):

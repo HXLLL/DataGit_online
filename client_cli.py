@@ -1,14 +1,15 @@
 import sys
 import os
 import argparse
-import controller
 import platform
 from filelock import Timeout, FileLock
+
 from core.types import VersionID
+from client import controller
 
 
 def acquire_lock() -> FileLock:
-    lockdir = "C:\\tmp"
+    lockdir ="C:\\tmp"
     if platform.system() == 'Linux':
         lockdir = '/tmp'
     if not os.path.isdir(lockdir):

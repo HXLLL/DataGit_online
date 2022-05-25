@@ -1,7 +1,8 @@
-from modify import Modify
 from typing import List, Dict
-from transform import Transform
-from update import Update
+
+from client.modify import Modify
+from client.transform import Transform
+from client.update import Update
 
 
 class Version():

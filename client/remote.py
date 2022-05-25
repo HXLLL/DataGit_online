@@ -1,13 +1,15 @@
-from typing import TYPE_CHECKING, Tuple, Dict, List
-import storage as storage
 import socket
 import pickle
 import urllib.parse
+import pdb
+from typing import TYPE_CHECKING, Tuple, Dict, List
+
+from client.update import Update
+from client.storage import storage
 if TYPE_CHECKING:
     from repo import Repo
     from version import Version
-from update import Update
-import pdb
+
 
 def remote_add(url:str) -> None:
     '''

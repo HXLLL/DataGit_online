@@ -1,10 +1,12 @@
+import os
 from multiprocessing import Pool
 import multiprocessing.pool as mp
-from blob import Blob
 from typing import List, Tuple, Union, Dict
+
 from tqdm import tqdm
-import os
+
 from core import utils
+from core.blob import Blob
 
 class Directory:
     def __init__(self, name: str = '') -> None:

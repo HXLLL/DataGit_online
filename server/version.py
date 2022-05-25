@@ -1,8 +1,8 @@
 from typing import List
-from modify import Modify
-from update import Update
-from transform import Transform
-from typing import List
+
+from server.modify import Modify
+from server.update import Update
+from server.transform import Transform
 
 
 class Version():
