@@ -3,7 +3,7 @@ from typing import List, Union, Tuple, Dict
 from storage import storage
 from core.directory import Directory
 from core.blob import Blob
-import utils
+import core.utils as utils
 import os
 import shutil
 from tqdm import tqdm

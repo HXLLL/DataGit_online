@@ -1,7 +1,7 @@
 import os
 import shutil
 from core.directory import Directory
-import utils
+import core.utils as utils
 import pickle
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:

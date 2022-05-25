@@ -6,7 +6,7 @@ from update import Update
 from version import Version
 from typing import Tuple
 import os
-import utils
+import core.utils as utils
 import shutil
 
 
