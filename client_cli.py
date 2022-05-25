@@ -149,11 +149,11 @@ def main():
     parser_log.set_defaults(func=func_status)
 
     parser_branch = subparsers.add_parser('branch', help='create a new branch')
-    parser_branch.add_argument('name', type=str, help='name of the branch')
+    parser_branch.add_argument('--name', type=str, help='name of the branch')
     parser_branch.set_defaults(func=func_branch)
 
     parser_remote = subparsers.add_parser('remote add', help='add a new remote repo')
-    parser_remote.add_argument('url', type=str, required=True, help='url of remote repo') 
+    parser_remote.add_argument('--url', type=str, required=True, help='url of remote repo') 
     parser_remote.set_defaults(func=func_remote)
 
     parser_push = subparsers.add_parser('push', help='push a new branch or the whole repo to a remote repo')
@@ -162,12 +162,12 @@ def main():
     parser_remote.set_defaults(func=func_push)
 
     parser_clone = subparsers.add_parser('clone', help='clone a new repo from a remote repo')
-    parser_clone.add_argument('url', type=str, required=True, help='url of remote repo')
+    parser_clone.add_argument('--url', type=str, required=True, help='url of remote repo')
     parser_clone.set_defaults(func=func_clone)
 
     parser_get = subparsers.add_parser('get', help='get a dataset from a remote repo')
-    parser_get.add_argument('url', type=str, required=True, help='url of remote repo') 
-    parser_get.add_argument('vid', type=VersionID, required=True, help='version id')
+    parser_get.add_argument('--url', type=str, required=True, help='url of remote repo') 
+    parser_get.add_argument('--vid', type=VersionID, required=True, help='version id')
     parser_get.set_defaults(func=func_get) 
 
     args = parser.parse_args(sys.argv[1:])  # the first argument is main.py
