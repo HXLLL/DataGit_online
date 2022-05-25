@@ -4,8 +4,7 @@ from blob import Blob
 from typing import List, Tuple, Union, Dict
 from tqdm import tqdm
 import os
-import utils
-
+from core import utils
 
 class Directory:
     def __init__(self, name: str = '') -> None:

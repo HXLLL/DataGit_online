@@ -4,8 +4,8 @@ import argparse
 import controller
 import platform
 from filelock import Timeout, FileLock
+from core.types import VersionID
 
-VersionID = int
 
 def acquire_lock() -> FileLock:
     lockdir = "C:\\tmp"

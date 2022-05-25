@@ -3,8 +3,8 @@ from storage import storage
 from repo import Repo
 from version import Version
 from typing import List
+from core.types import VersionID
 
-VersionID=int
 
 def trans_path(dir: str) -> str:
     res = ''

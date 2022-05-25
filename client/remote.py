@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING, Tuple, Dict, List
-import storage
+import storage as storage
 import socket
 import pickle
 import urllib.parse

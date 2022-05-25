@@ -1,8 +1,8 @@
 from modify import Modify
 from typing import List, Union, Tuple, Dict
 from storage import storage
-from directory import Directory
-from blob import Blob
+from core.directory import Directory
+from core.blob import Blob
 import utils
 import os
 import shutil
@@ -111,7 +111,6 @@ class Update(Modify):
             + ('\n        ......' if len(self.__remove_list) > 10 else '')
         return res
 
-<<<<<<< Updated upstream
     def load_hash(self) -> List:
         hash_list = []
         for item in self.__add_list:
@@ -123,7 +122,6 @@ class Update(Modify):
                 hash_list += [item[1].get_hash()]
         return hash_list
 
-=======
     def to_dict(self):
         tmp_dict = {
             'type' : 'update',
@@ -134,4 +132,3 @@ class Update(Modify):
     def load_from_dict(self, d: Dict):
         self.__add_list = d['add_list']
         self.__remote_list = d['remote_list']
->>>>>>> Stashed changes

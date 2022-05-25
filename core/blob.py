@@ -1,7 +1,5 @@
 from typing import List, Tuple
 import os
-import utils
-
 
 class Blob:
     def __init__(self, name, hash=None) -> None:

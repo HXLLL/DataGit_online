@@ -3,9 +3,8 @@ from storage import storage
 from version import Version
 from stage import Stage
 import os
-import utils
-
-VersionID = int
+import core.utils as utils
+from core.types import VersionID
 
 class Repo:
     def __init__(self):

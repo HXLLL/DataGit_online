@@ -1,10 +1,10 @@
 from typing import Tuple, List, Union, Dict
-from client.repo import VersionID
+from core.types import VersionID
 from storage import storage
 from version import Version
 from typing import List
 import os
-import utils
+import core.utils
 
 class Repo:
     def __init__(self):

@@ -1,17 +1,20 @@
 import os
 import shutil
-from directory import Directory
-import utils
+from core.directory import Directory
+import core.utils
 import pickle
+import platform
 from typing import TYPE_CHECKING, List
 if TYPE_CHECKING:
-    from blob import Blob
+    from core.blob import Blob
     from repo import Repo
 
 
 class Storage:
     def __init__(self):
         self.root_path = 'C:\\datagit'  # 暂时先写死
+        if platform.system() == 'Linux':
+            self.root_path = '/var/datagit'
         if not os.path.exists(self.root_path):
             os.makedirs(self.root_path)
 

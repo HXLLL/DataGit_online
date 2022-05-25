@@ -1,6 +1,6 @@
 from typing import List
 from modify import Modify
-from directory import Directory
+from core.directory import Directory
 from transform import Transform
 from update import Update
 from version import Version

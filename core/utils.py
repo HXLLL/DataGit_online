@@ -3,7 +3,7 @@ import os.path
 import signal
 
 
-def get_working_dir() -> str:
+def get_working_dir(d = None) -> str:
     """
     get working directory's root
     return -- absolute dir of working dir's root
@@ -12,7 +12,8 @@ def get_working_dir() -> str:
     if hasattr(get_working_dir, 'cache'):
         return get_working_dir.cache
 
-    d = os.getcwd()
+    if d is None:
+        d = os.getcwd()
     while os.path.dirname(d) != d:
         if os.path.isdir(os.path.join(d, ".datagit")):
             break
