@@ -23,10 +23,6 @@ def acquire_lock() -> FileLock:
         raise ValueError("Another datagit is running")
 
 
-def func_init(args: argparse.Namespace) -> None:
-    controller.init()
-
-
 def func_checkout(args: argparse.Namespace) -> None:
     if (args.v == None) and (args.b == False):
         raise ValueError("You should give -v or -b, not neither of them!")
@@ -83,9 +79,6 @@ def func_fork(args: argparse.Namespace) -> None:
 def main():
     parser = argparse.ArgumentParser(prog="datagit")
     subparsers = parser.add_subparsers(help="subcommands")
-
-    parser_init = subparsers.add_parser('init', help='initialize a repo')
-    parser_init.set_defaults(func=func_init)
 
     parser_checkout = subparsers.add_parser('checkout', help='checkout the dataset')
     parser_checkout.add_argument('-v', type=int, help='checkout dataset of the version ID')

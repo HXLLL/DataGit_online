@@ -18,11 +18,6 @@ def trans_path(dir: str) -> str:
     return res
 
 
-def init() -> None:
-    repo = Repo()
-    repo.init()
-    storage.save_repo(repo)
-
 def checkout_v(obj: int) -> None:
     repo = storage.load_repo()
 
