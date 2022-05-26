@@ -1,3 +1,4 @@
+import os
 import socket
 import pickle
 import urllib.parse
@@ -6,6 +7,7 @@ from typing import TYPE_CHECKING, Tuple, Dict, List
 
 from client.update import Update
 from client.storage import storage
+from core import utils
 if TYPE_CHECKING:
     from repo import Repo
     from version import Version
@@ -18,7 +20,11 @@ def remote_add(url:str) -> None:
     '''
     storage.save_remote(url)
 
+
 def parse_addr(url: str) -> Tuple[str, int]:
+    '''
+    get a socket address pair from a url
+    '''
     target = urllib.parse.urlparse(url)
     hp = target.netloc.split(':')
     assert len(hp) == 1 or len(hp) == 2
@@ -29,6 +35,9 @@ def parse_addr(url: str) -> Tuple[str, int]:
     return (hostname, int(port))
 
 def parse_uri(url: str) -> str:
+    '''
+    get uri from a url
+    '''
     target = urllib.parse.urlparse(url)
     return target.path
     
@@ -66,15 +75,19 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
 
     flist = []
     for v in required_version:
-        flist.extend(v.get_files()) # TODO
+        flist.extend(v.get_hash_list())
     pickle.dump(flist, f)
     f.flush()
     required_files: List[str] = pickle.load(f)
 
-    for f in required_files:
-        f = storage.get_file()      # TODO
-        # TODO: open f, read it, and send it to server
-        f.flush()
+    wd = utils.get_working_dir()
+    for file_hash in required_files:
+        filename = storage.get_file(file_hash)
+        filename = os.path.join(wd, filename)
+        with open(filename, "rb") as g:
+            c = g.read()
+            pickle.dump(c)
+    f.flush()
     
     for v in required_version:
         pickle.dump(v.to_dict(), f)
