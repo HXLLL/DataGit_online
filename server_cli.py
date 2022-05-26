@@ -23,10 +23,6 @@ def acquire_lock() -> FileLock:
         raise ValueError("Another datagit is running")
 
 
-def func_init(args: argparse.Namespace) -> None:
-    controller.init()
-
-
 def func_checkout(args: argparse.Namespace) -> None:
     if (args.v == None) and (args.b == False):
         raise ValueError("You should give -v or -b, not neither of them!")
@@ -66,9 +62,9 @@ def func_branch(args: argparse.Namespace):
 
 def func_get_repo(args: argparse.Namespace) -> None:
     if (args.a == False) and (args.v == None):
-        raise ValueError("You should give one of [-a] or [-v version_name], not none of them")
+        raise ValueError("You should give one of [-a] or [-r repo_name], not none of them")
     if (args.a == True) and (args.v != None):
-        raise ValueError("You should give one of [-a] or [-v version_name], not both of them")
+        raise ValueError("You should give one of [-a] or [-r repo_name], not both of them")
     print(controller.get_repo(args.a, args.v))
 
 
@@ -83,9 +79,6 @@ def func_fork(args: argparse.Namespace) -> None:
 def main():
     parser = argparse.ArgumentParser(prog="datagit")
     subparsers = parser.add_subparsers(help="subcommands")
-
-    parser_init = subparsers.add_parser('init', help='initialize a repo')
-    parser_init.set_defaults(func=func_init)
 
     parser_checkout = subparsers.add_parser('checkout', help='checkout the dataset')
     parser_checkout.add_argument('-v', type=int, help='checkout dataset of the version ID')
@@ -115,7 +108,7 @@ def main():
 
     parser_get_repo = subparsers.add_parser('get_repo', help='get information of repos')
     parser_get_repo.add_argument('-a', action='store_true', help='if all')
-    parser_get_repo.add_argument('-v', type=str, help='name of the repo that you need to learn')
+    parser_get_repo.add_argument('-r', type=str, help='name of the repo that you need to learn')
     parser_get_repo.set_defaults(func=func_get_repo)
 
     parser_create = subparsers.add_parser('create', help='create a new repo')

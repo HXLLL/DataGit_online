@@ -20,10 +20,6 @@ class Repo:
     
     def get_parent_id(self) -> str:
         return self.__parent_id
-
-    def init(self) -> None:
-        storage.create_repo()
-        storage.save_empty_version(1)  # 要改
     
     def add_version(self, version: Version) -> None:
         self.versions.append(version)
