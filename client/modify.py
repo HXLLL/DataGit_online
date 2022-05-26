@@ -11,3 +11,11 @@ class Modify(ABC):
         应用update或transform到work_path目录
         '''
         pass
+
+    @abstractmethod
+    def to_dict(self):
+        pass
+
+    @abstractmethod
+    def load_from_dict(self):
+        pass
