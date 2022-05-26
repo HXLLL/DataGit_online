@@ -85,7 +85,8 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
         filename = storage.get_file(file_hash)
         filename = os.path.join(wd, filename)
         with open(filename, "rb") as g:
-            f.write(g.read())
+            c = g.read()
+            pickle.dump(c)
     f.flush()
     
     for v in required_version:
