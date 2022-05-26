@@ -227,3 +227,5 @@ class Repo:
         for item in init_dict['version_map'].keys():
             tmp = Version(None, None, None, None)
             self.version_map[item] = tmp.load_from_dict(init_dict['version_map'][item])
+
+        self.branch_map     = init_dict['branch_map']
