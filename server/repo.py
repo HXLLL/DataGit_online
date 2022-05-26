@@ -47,7 +47,6 @@ class Repo:
         tmp_dict = {
             'init_version' : init_version_tmp,
             'versions' : versions_tmp,
-            'saved_version' : self.saved_version,
             'version_map' : version_map_tmp
         }
 
