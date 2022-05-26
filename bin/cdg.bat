@@ -1,1 +1,1 @@
-@python %~dp0\..\client\main.py %*
+@python %~dp0\..\client_cli.py %*

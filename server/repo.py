@@ -11,6 +11,7 @@ class Repo:
         self.init_version = Version(None, 1, [], 'init')
         self.versions: List[Version] = [self.init_version]
         self.version_map: dict[int, Version] = {1: self.init_version}  # map id to version
+        self.branch_map: dict[str, VersionID] = {'main': 1}  # map branch name to version id
         self.__parent_id: str = None  # fork的id
 
     def parent_id_init(self, name:str):
@@ -21,11 +22,14 @@ class Repo:
 
     def init(self) -> None:
         storage.create_repo()
-        storage.save_empty_version(1)
+        storage.save_empty_version(1)  # 要改
     
     def add_version(self, version: Version) -> None:
         self.versions.append(version)
         self.version_map[version.id] = version
+    
+    def move_branch(self, branch_name: str, version_id: VersionID):
+        self.branch_map[branch_name] = version_id
     
     def comp(self, version_list) -> List[VersionID]:
         Ans = []
@@ -34,7 +38,10 @@ class Repo:
                 Ans.append(item)
         return Ans
 
-    def to_dict(self):
+    def get_info(self) -> str:
+        return f"fork from {self.__parent_id}"
+
+    def to_dict(self) -> dict:
         init_version_tmp = self.init_version.to_dict()
         versions_tmp = []
         for item in self.versions:
@@ -47,8 +54,8 @@ class Repo:
         tmp_dict = {
             'init_version' : init_version_tmp,
             'versions' : versions_tmp,
-            'saved_version' : self.saved_version,
-            'version_map' : version_map_tmp
+            'version_map' : version_map_tmp,
+            'branch_map' : self.branch_map
         }
 
         return tmp_dict

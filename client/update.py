@@ -130,7 +130,8 @@ class Update(Modify):
             'add_list' : self.__add_list,
             'remove_list' : self.__remove_list
         }
+        return tmp_dict
     
     def load_from_dict(self, d: Dict):
         self.__add_list = d['add_list']
-        self.__remote_list = d['remote_list']
+        self.__remove_list = d['remove_list']

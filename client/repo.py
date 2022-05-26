@@ -221,9 +221,11 @@ class Repo:
             tmp = Version(None, None, None, None)
             self.versions.append(tmp.load_from_dict(item))
         
-        self.saved_version  = init_dict['saved_version']
+        self.saved_version  = [1]
 
         self.version_map    = dict()
         for item in init_dict['version_map'].keys():
             tmp = Version(None, None, None, None)
             self.version_map[item] = tmp.load_from_dict(init_dict['version_map'][item])
+
+        self.branch_map     = init_dict['branch_map']

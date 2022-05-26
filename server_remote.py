@@ -37,11 +37,13 @@ class Handler(socketserver.StreamRequestHandler):
             content = pickle.load(self.rfile)
             storage.save_file(f, content)
         
+        version_list = []
         for f in vlist:
             _version: Dict = pickle.load(self.rfile)
             version = Version(None, None, None, None)
             version.load_from_dict(_version)
-            controller.add_version(repo_name, version)
+            version_list.append(version)
+        controller.update_repo(repo_name, branch, version_list)
 
     def get(self) -> None:
         pass

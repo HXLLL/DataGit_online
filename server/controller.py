@@ -101,12 +101,18 @@ def get_repo(a: bool, name: str) -> str:
 
 
 def create(name: str) -> None:
+    if storage.exist_repo(name):
+        raise ValueError("repository already exists")
     repo = Repo()
     storage.create_repo(name)
     storage.save_repo(name, repo)
 
 
 def fork(old_name: str, new_name: str) -> None:
+    if not storage.exist_repo(old_name):
+        raise ValueError("src repository doesn't exist")
+    if storage.exist_repo(new_name):
+        raise ValueError("dst repository already exists")
     storage.copy_repo(old_name, new_name)
     repo = storage.load_repo(new_name)
     repo.parent_id_init(old_name)
@@ -121,6 +127,13 @@ def diff_version(repo_name:str, version_list:str) -> List[VersionID]:
 def diff_files(hash_list: List[str]) -> List[str]:
     return list(filter(lambda x: not storage.exist_file(x), set(hash_list)))
 
-def add_version(repo_name: str, version: Version):
+# def add_version(repo_name: str, version: Version):
+#     repo = storage.load_repo(repo_name)
+#     repo.add_version(version)
+
+def update_repo(repo_name: str, branch_name: str, version_list: List[Version]):
     repo = storage.load_repo(repo_name)
-    repo.add_version(version)
+    for version in version_list:
+        repo.add_version(version)
+    repo.move_branch(branch_name, version_list[-1].id)
+    storage.save_repo(repo)
