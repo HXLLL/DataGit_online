@@ -65,9 +65,9 @@ def func_branch(args: argparse.Namespace):
 
 
 def func_get_repo(args: argparse.Namespace) -> None:
-    if (args.a == None) and (args.v == None):
+    if (args.a == False) and (args.v == None):
         raise ValueError("You should give one of [-a] or [-v version_name], not none of them")
-    if (args.a != None) and (args.v != None):
+    if (args.a != True) and (args.v != None):
         raise ValueError("You should give one of [-a] or [-v version_name], not both of them")
     print(controller.get_repo(args.a, args.v))
 
