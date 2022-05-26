@@ -101,12 +101,18 @@ def get_repo(a: bool, name: str) -> str:
 
 
 def create(name: str) -> None:
+    if storage.exist_repo(name):
+        raise ValueError("repository already exists")
     repo = Repo()
     storage.create_repo(name)
     storage.save_repo(name, repo)
 
 
 def fork(old_name: str, new_name: str) -> None:
+    if not storage.exist_repo(old_name):
+        raise ValueError("src repository doesn't exist")
+    if storage.exist_repo(new_name):
+        raise ValueError("dst repository already exists")
     storage.copy_repo(old_name, new_name)
     repo = storage.load_repo(new_name)
     repo.parent_id_init(old_name)
