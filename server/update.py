@@ -25,3 +25,14 @@ class Update(Modify):
     def load_from_dict(self, init_dict):
         self.__add_list = init_dict['add_list']
         self.__remove_list = init_dict['remove_list']
+
+    def load_hash(self) -> List:
+        hash_list = []
+        for item in self.__add_list:
+            if isinstance(item[1], Directory):
+                x = item[1].unfold("")
+                for y in x:
+                    hash_list += [y[1].get_hash()]
+            else:
+                hash_list += [item[1].get_hash()]
+        return hash_list

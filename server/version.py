@@ -43,3 +43,10 @@ class Version():
                 self.modify_sequence.append(tmp.load_from_dict(item))
         
         self.message = init_dict['message']
+
+    def get_hash_list(self) -> List:
+        hash_list = []
+        for item in self.modify_sequence:
+            if isinstance(item, Update):
+                hash_list += item.load_hash()
+        return hash_list
