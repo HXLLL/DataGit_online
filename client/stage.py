@@ -125,15 +125,14 @@ class Stage():
             raise ValueError('Paths cannot contain each other')
         if not os.path.exists(src):
             raise ValueError('src not a valid path')
-        if not os.path.exists(dst):
-            os.makedirs(dst)
 
         # 把src里的所有东西复制到dst
         for src_dir, dirnames, filenames in os.walk(src):
-            # print('a:', src_dir, dirnames, filenames)
+            rel_dir = os.path.relpath(src_dir, src)
+            dst_dir = os.path.join(dst, rel_dir)
+            if not os.path.exists(dst_dir):
+                os.makedirs(dst_dir)
             for filename in filenames:
-                rel_dir = os.path.relpath(src_dir, src)
-                dst_dir = os.path.join(dst, rel_dir)
                 src_file = os.path.join(src_dir, filename)
                 dst_file = os.path.join(dst_dir, filename)
                 if not os.path.exists(dst_dir):

@@ -75,12 +75,12 @@ class Storage:
         # 假设调用方保证new_name不是已有的仓库名字
         src = os.path.join(self.root_path, 'repos', old_name)
         dst = os.path.join(self.root_path, 'repos', new_name)
-        os.mkdir(dst)
         for src_dir, dirnames, filenames in os.walk(src):
-            # print('a:', src_dir, dirnames, filenames)
+            rel_dir = os.path.relpath(src_dir, src)
+            dst_dir = os.path.join(dst, rel_dir)
+            if not os.path.exists(dst_dir):
+                os.makedirs(dst_dir)
             for filename in filenames:
-                rel_dir = os.path.relpath(src_dir, src)
-                dst_dir = os.path.join(dst, rel_dir)
                 src_file = os.path.join(src_dir, filename)
                 dst_file = os.path.join(dst_dir, filename)
                 if not os.path.exists(dst_dir):
