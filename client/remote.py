@@ -2,6 +2,8 @@ import socket
 import pickle
 import urllib.parse
 import pdb
+import os
+import zipfile
 from typing import TYPE_CHECKING, Tuple, Dict, List
 
 from client.update import Update
@@ -79,3 +81,44 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
     for v in required_version:
         pickle.dump(v.to_dict(), f)
     f.flush()
+
+def clone(url: str):
+    working_dir = os.getcwd()
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    addr = parse_addr(url)
+    uri = parse_uri(url)
+
+    import pdb
+    pdb.set_trace()
+    s.connect(addr)
+    f = s.makefile("rwb")
+    f.write("clone\n".encode('utf-8'))
+    f.write(f"{uri}\n".encode('utf-8'))
+    f.flush()           
+
+    repo_name = f.readline()
+    if os.path.exists(os.path.join(working_dir, repo_name)):
+        f.write("repo_exist\n".encode('utf-8'))
+    else:
+        f.write("OK\n".encode('utf-8'))
+
+    # recieve .datagit/repo
+    os.makedir(repo_name)
+    os.chdir(os.path.join(working_dir, repo_name))
+    storage.create_repo()
+    working_dir = os.path.join(working_dir, repo_name, '.datagit')
+    with open(os.path.join(working_dir, 'repo', 'repo.pk')) as repo_file:
+        repo_file.write(f.read())
+    
+    # recieve .datagit/programs
+    with open(os.path.join(working_dir, 'tmp.zip'), 'wb') as prog_file:
+        prog_file.write(f.read())
+    
+    dst_dir = os.path.join(working_dir, 'programs')
+    zf = zipfile.ZipFile(os.path.join(working_dir, 'tmp.zip'), 'r')
+    for f in zf.namelist():
+        zf.extract(f, dst_dir)
+    zf.close()
+    os.remove(os.path.join(working_dir, 'tmp.zip'))
+    
