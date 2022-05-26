@@ -34,6 +34,9 @@ class Repo:
                 Ans.append(item)
         return Ans
 
+    def get_info(self) -> str:
+        return f"fork from {self.__parent_id}"
+
     def to_dict(self) -> dict:
         init_version_tmp = self.init_version.to_dict()
         versions_tmp = []
