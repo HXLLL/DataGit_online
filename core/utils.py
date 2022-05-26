@@ -1,6 +1,10 @@
 import os
 import signal
 import hashlib
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives import serialization
 
 
 def get_working_dir(d = None) -> str:
@@ -47,3 +51,35 @@ def in_working_dir(dir: str) -> bool:
 
 def init_worker():
     signal.signal(signal.SIGINT, signal.SIG_IGN)
+
+
+def encrypt(msg: bytes, public_key: rsa.RSAPublicKey) -> bytes:
+    return public_key.encrypt(
+        msg,
+        padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None,
+        )
+    )
+
+
+def decrypt(ciphertext: bytes, private_key: rsa.RSAPrivateKey) -> bytes:
+    return private_key.decrypt(
+        ciphertext,
+        padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None,
+        )
+    )
+
+
+def load_public_key(filename: str) -> rsa.RSAPublicKey:
+    with open(filename, "rb") as f:
+        return serialization.load_ssh_public_key(f.read())
+
+
+def load_private_key(filename: str, passwd: bytes=b''):
+    with open(filename, "rb") as f:
+        return serialization.load_ssh_private_key(f.read(), password=passwd)
