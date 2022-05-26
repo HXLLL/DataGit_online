@@ -96,5 +96,8 @@ class Storage:
 
     def exist_file(self, hash: str) -> bool:
         return os.path.exists(os.path.join(self.root_path, 'data', hash))
+    
+    def get_repo_path(self, repo_name: str) -> str:
+        return os.path.join(self.root_path, 'repos', repo_name)
 
 storage = Storage()
