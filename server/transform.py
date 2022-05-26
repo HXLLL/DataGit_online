@@ -3,8 +3,8 @@ from typing import List
 
 from core.directory import Directory
 from core import utils
-from modify import Modify
-from storage import storage
+from server.modify import Modify
+from server.storage import storage
 
 class Transform(Modify):
 
