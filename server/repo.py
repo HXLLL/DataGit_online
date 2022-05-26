@@ -5,6 +5,7 @@ from core import utils
 from core.types import VersionID
 from server.storage import storage
 from server.version import Version
+from server_remote import Handler
 
 class Repo:
     def __init__(self):
@@ -55,3 +56,15 @@ class Repo:
         }
 
         return tmp_dict
+
+    def get(self, dst:VersionID):
+        if not dst in self.version_map:
+            return False
+        dest_version = self.version_map[dst]
+        route, v = [], dest_version
+        while v.id != 1:
+            route.append(v)
+            pid = v.parent
+            v = self.version_map[pid]
+        route.reverse()
+        return route

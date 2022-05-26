@@ -107,7 +107,7 @@ def main():
     parser_branch.set_defaults(func=func_branch)
 
     parser_get_repo = subparsers.add_parser('get_repo', help='get information of repos')
-    parser_get_repo.add_argument('-a', action='store_true', help='if one to one ')
+    parser_get_repo.add_argument('-a', action='store_true', help='if all')
     parser_get_repo.add_argument('-v', type=str, help='name of the repo that you need to learn')
     parser_get_repo.set_defaults(func=func_get_repo)
 
