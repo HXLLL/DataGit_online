@@ -34,7 +34,7 @@ class Repo:
                 Ans.append(item)
         return Ans
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         init_version_tmp = self.init_version.to_dict()
         versions_tmp = []
         for item in self.versions:
