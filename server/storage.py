@@ -21,20 +21,20 @@ class Storage:
 
     def load_repo(self, repo_name: str) -> 'Repo':
         """
-        load repo from root_path/repo_name/.datagit/repo
+        load repo
         """
         repo_path = os.path.join(
-            self.root_path, 'repo', repo_name, '.datagit', 'repo', 'repo.pk')
+            self.root_path, 'repos', repo_name, 'repo', 'repo.pk')
         with open(repo_path, 'rb') as repo_file:
             return pickle.load(repo_file)
         return None
 
     def save_repo(self, repo_name: str, repo: 'Repo') -> None:
         """
-        save repo to .datagit/repo
+        save repo
         """
         repo_path = os.path.join(
-            self.root_path, 'repo', repo_name, '.datagit', 'repo', 'repo.pk')
+            self.root_path, 'repos', repo_name, 'repo', 'repo.pk')
         with open(repo_path, 'wb') as repo_file:
             pickle.dump(repo, repo_file)
 
@@ -64,25 +64,17 @@ class Storage:
         return -- the assigned id
         """
         program_dir = os.path.join(
-            self.root_path, 'repo', repo_name, ".datagit", "programs")
+            self.root_path, 'repos', repo_name, "programs")
         cnt = len(os.listdir(program_dir))
         id = cnt + 1
         dst = os.path.join(program_dir, "%d" % id)
         shutil.copytree(dir1, dst)
         return id
-
-    def get_transform(self, transform_id: int) -> str:
-        """
-        given a transform program's id, return its relative path
-        return -- relative path to working dir's root
-        """
-
-        return os.path.join(".datagit", "programs", "%d" % transform_id)
     
     def copy_repo(self, old_name: str, new_name: str) -> None:
         # 假设调用方保证new_name不是已有的仓库名字
-        src = os.path.join(self.root_path, 'repo', old_name)
-        dst = os.path.join(self.root_path, 'repo', new_name)
+        src = os.path.join(self.root_path, 'repos', old_name)
+        dst = os.path.join(self.root_path, 'repos', new_name)
         os.mkdir(dst)
         for src_dir, dirnames, filenames in os.walk(src):
             # print('a:', src_dir, dirnames, filenames)
@@ -96,10 +88,11 @@ class Storage:
                 shutil.copy(src_file, dst_file)
     
     def create_repo(self, repo_name: str) -> None:
-        os.mkdir(os.path.join(self.root_path, 'repo', repo_name))
+        os.makedirs(os.path.join(self.root_path, 'repos', repo_name, 'repo'))
+        os.makedirs(os.path.join(self.root_path, 'repos', repo_name, 'programs'))
     
     def get_repo_name(self) -> List[str]:
-        return os.listdir(os.path.join(self.root_path, 'repo'))
+        return os.listdir(os.path.join(self.root_path, 'repos'))
 
     def exist_file(self, hash: str) -> bool:
         return os.path.exists(os.path.join(self.root_path, 'data', hash))
