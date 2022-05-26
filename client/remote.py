@@ -88,7 +88,7 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
         filename = os.path.join(wd, filename)
         with open(filename, "rb") as g:
             c = g.read()
-            pickle.dump(c)
+            pickle.dump(c, f)
     f.flush()
     
     for v in required_version:
@@ -119,10 +119,10 @@ def clone(url: str):
     # recieve .datagit/repo
     os.makedir(repo_name)
     os.chdir(os.path.join(working_dir, repo_name))
-    storage.create_repo()
+    repo = storage.load_repo()
     working_dir = os.path.join(working_dir, repo_name, '.datagit')
-    with open(os.path.join(working_dir, 'repo', 'repo.pk')) as repo_file:
-        repo_file.write(f.read())
+    repo.load_from_dict( pickle.load(f) )
+    storage.save_repo()
     
     # recieve .datagit/programs
     with open(os.path.join(working_dir, 'tmp.zip'), 'wb') as prog_file:
