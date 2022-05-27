@@ -3,7 +3,6 @@ import socket
 import pickle
 import urllib.parse
 import pdb
-import os
 import zipfile
 from typing import TYPE_CHECKING, Tuple, Dict, List
 
@@ -53,28 +52,42 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
     uri = parse_uri(url)
     
     """
-    start network communication
-        1. 'push'
-        2. branch name
-        3. uri
-        4. version list from init to the branch
-        5. wait the server's response required version
-        6. send all files of required version
-        7. wait the server's response required file
+    network communication protocol
+        1. send 'push'
+        2. send branch name
+        3. send uri
+        4. wait for authentication message (an encrypted random number)
+        5. send the decrypted random number
+        6. send version list from init to the branch
+        7. wait the server's response required version
+        8. send file list of required versions
+        9. wait the server's response required file
+        10. send full contents of all files
+        11. send struct for all versions
     """
-    import pdb
-    pdb.set_trace()
     s.connect(addr)
     f = s.makefile("rwb")
+
+    # 1. 2. 3.
     f.write("push\n".encode('utf-8'))
     f.write(f"{branch}\n".encode('utf-8'))
     f.write(f"{uri}\n".encode('utf-8'))
+    f.flush()
 
+    # 4. 5.
+    ciphertext = pickle.load(f)
+    private_key = storage.get_private_key() #TODO
+    msg = utils.decrypt(ciphertext, private_key)
+    f.write(msg)
+    f.flush()
+
+    # 6. 7.
     vs = repo.get_version_list(branch)
     pickle.dump(vs, f)
     f.flush()
     required_version: List['Version'] = pickle.load(f)
 
+    # 8. 9.
     flist = []
     for v in required_version:
         flist.extend(v.get_hash_list())
@@ -82,6 +95,7 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
     f.flush()
     required_files: List[str] = pickle.load(f)
 
+    # 10.
     wd = utils.get_working_dir()
     for file_hash in required_files:
         filename = storage.get_file(file_hash)
@@ -91,6 +105,7 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
             pickle.dump(c, f)
     f.flush()
     
+    # 11.
     for v in required_version:
         pickle.dump(v.to_dict(), f)
     f.flush()

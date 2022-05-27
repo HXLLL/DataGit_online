@@ -7,6 +7,7 @@ import zipfile
 from multiprocessing import Process 
 from typing import TYPE_CHECKING, Dict
 
+from core import utils
 from server import controller
 from server.version import Version
 from server.storage import storage
@@ -17,26 +18,46 @@ server_addr = ("localhost", 8887)
 
 class Handler(socketserver.StreamRequestHandler):
     def push(self) -> None:
+        """
+        refer to client/remote.py for network communication protocol
+        """
+
+        # 2. 3.
         branch = self.rfile.readline().decode("utf-8").strip()
         uri = self.rfile.readline().decode("utf-8").strip()
         l = uri.strip('/').split('/')
         assert len(l) == 1
         repo_name = l[0]
+
+        # 4. 5.
+        msg = os.urandom(32)
+        public_key = storage.get_public_key(repo_name) # TODO
+        ciphertext = utils.encrypt(msg, public_key)
+        pickle.dump(ciphertext, self.wfile)
+        self.wfile.flush()
+        resp = pickle.load(self.rfile)
+        if msg != resp:
+            print("Authentication Failed")
+            return
         
+        # 6. 7.
         version_list = pickle.load(self.rfile)
         vlist = controller.diff_version(repo_name, version_list)
         pickle.dump(vlist, self.wfile)
         self.wfile.flush()
 
+        # 8. 9.
         file_list = pickle.load(self.rfile)
         flist = controller.diff_files(file_list)
         pickle.dump(flist, self.wfile)
         self.wfile.flush()
 
+        # 10.
         for f in flist:
             content = pickle.load(self.rfile)
             storage.save_file(f, content)
         
+        # 11.
         version_list = []
         for f in vlist:
             _version: Dict = pickle.load(self.rfile)
