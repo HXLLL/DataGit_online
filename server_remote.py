@@ -70,6 +70,7 @@ class Handler(socketserver.StreamRequestHandler):
             return
 
         # send repo
+        repo_path = storage.get_repo_path()
         repo = storage.load_repo(repo_name)
         pickle.dump(repo.to_dict(), self.wfile)
         self.wfile.flush()
@@ -85,21 +86,27 @@ class Handler(socketserver.StreamRequestHandler):
         
         get_zip(os.path.join(repo_path, 'programs'))
         with open(os.path.join(repo_path, 'tmp.zip'), 'rb') as prog_file:
-            self.wfile.write(prog_file.read())
+            pickle.dump(prog_file.read(), self.wfile)
             self.wfile.flush()
         os.remove(os.path.dir(repo_path, 'tmp.zip'))
 
         # send data
         file_list = [] # path of files
+        file_name_list = [] # hash_value
         for v in repo.versions:
             hash_list = v.get_hash_list()
             for hash_value in hash_list:
                 file_path = storage.get_file(hash_value)
                 if not file_path in file_list:
                     file_list.append(file_path)
+                    file_name_list.append(hash_value)
         
-        for f in file_list:
-            pass
+        pickle.dump(file_name_list, self.wfile)
+        self.wfile.flush()
+        for file_path in file_list:
+            with open(file_path, 'rb') as afile:
+                pickle.dump(afile.read(), self.wfile)
+                self.wfile.flush()
 
 
     def handle(self):

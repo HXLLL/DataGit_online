@@ -126,7 +126,7 @@ def clone(url: str):
     
     # recieve .datagit/programs
     with open(os.path.join(working_dir, 'tmp.zip'), 'wb') as prog_file:
-        prog_file.write(f.read())
+        prog_file.write( pickle.load(f) )
     
     dst_dir = os.path.join(working_dir, 'programs')
     zf = zipfile.ZipFile(os.path.join(working_dir, 'tmp.zip'), 'r')
@@ -134,4 +134,11 @@ def clone(url: str):
         zf.extract(f, dst_dir)
     zf.close()
     os.remove(os.path.join(working_dir, 'tmp.zip'))
+
+    # recieve .datagit/data
+    file_name_list = pickle.load(f)
+    for file_name in file_name_list:
+        with open(os.path.join(working_dir, 'data', file_name), 'wb') as afile:
+            afile.write(pickle.load(f))
+
     
