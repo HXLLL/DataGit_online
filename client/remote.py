@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Tuple, Dict, List
 
 from client.update import Update
 from client.storage import storage
+from client.stage import Stage
 from core import utils
 if TYPE_CHECKING:
     from repo import Repo
@@ -125,16 +126,20 @@ def clone(url: str):
     f.write(f"{uri}\n".encode('utf-8'))
     f.flush()           
 
-    repo_name = f.readline()
+    repo_name = f.readline().decode('utf-8')
     if os.path.exists(os.path.join(working_dir, repo_name)):
         f.write("repo_exist\n".encode('utf-8'))
     else:
         f.write("OK\n".encode('utf-8'))
 
     # recieve .datagit/repo
-    os.makedir(repo_name)
+    os.makedirs(repo_name)
     os.chdir(os.path.join(working_dir, repo_name))
-    repo = storage.load_repo()
+    repo = Repo()
+    repo.init()
+
+    stage = Stage()
+    storage.save_stage(stage)
     working_dir = os.path.join(working_dir, repo_name, '.datagit')
     repo.load_from_dict( pickle.load(f) )
     storage.save_repo()
