@@ -131,9 +131,12 @@ def diff_files(hash_list: List[str]) -> List[str]:
 #     repo = storage.load_repo(repo_name)
 #     repo.add_version(version)
 
-def update_repo(repo_name: str, branch_name: str, version_list: List[Version]):
+def update_repo(repo_name: str,
+                branch_name: str, 
+                branch_version_id: VersionID,
+                version_list: List[Version]):
     repo = storage.load_repo(repo_name)
     for version in version_list:
         repo.add_version(version)
-    repo.move_branch(branch_name, version_list[-1].id)
+    repo.move_branch(branch_name, branch_version_id)
     storage.save_repo(repo_name, repo)

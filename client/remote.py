@@ -8,6 +8,8 @@ import tempfile
 import shutil
 from typing import TYPE_CHECKING, Tuple, Dict, List
 
+from tqdm import tqdm
+
 from client.repo import Repo
 from client.update import Update
 from client.storage import storage
@@ -87,7 +89,6 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
 #     f.write(msg)
 #     f.flush()
 
-    pdb.set_trace()
     # 6. 7.
     vs = repo.get_version_list(
         repo.get_init_version_id(), repo.branch_map[branch])
@@ -113,7 +114,7 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
 
     # 11.
     wd = utils.get_working_dir()
-    for file_hash in required_files:
+    for file_hash in tqdm(required_files, desc="Uploading Files"):
         filename = storage.get_file(file_hash)
         filename = os.path.join(wd, filename)
         with open(filename, "rb") as g:
@@ -188,7 +189,7 @@ def clone(url: str):
     # recieve .datagit/data
     print('recieve_data')
     file_name_list = pickle.load(f)
-    for file_name in file_name_list:
+    for file_name in tqdm(file_name_list, desc="Downloading Files"):
         with open(os.path.join(working_dir, 'data', file_name), 'wb') as afile:
             afile.write(pickle.load(f))
 
@@ -252,3 +253,4 @@ def get (url: str, version_id: VersionID):
 
     repo.checkout(version_id, False)
     shutil.rmtree(os.path.join(working_dir, repo_name, '.datagit'))
+    storage.save_remote(url)
