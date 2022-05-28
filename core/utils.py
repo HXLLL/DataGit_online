@@ -1,6 +1,7 @@
 import os
 import signal
 import hashlib
+import zipfile
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import hashes
@@ -83,3 +84,12 @@ def load_public_key(filename: str) -> rsa.RSAPublicKey:
 def load_private_key(filename: str, passwd: bytes=b''):
     with open(filename, "rb") as f:
         return serialization.load_ssh_private_key(f.read(), password=passwd)
+
+
+def get_zip(dir_path, zip_path):
+    zip = zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED)
+    for path, _, filenames in os.walk(dir_path):
+        fpath = path.replace(dir_path, '')
+        for filename in filenames:
+            zip.write(os.path.join(path, filename), os.path.join(fpath, filename))
+    zip.close()
