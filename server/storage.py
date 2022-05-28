@@ -2,6 +2,7 @@ import os
 import shutil
 import pickle
 import platform
+from cryptography.hazmat.primitives.asymmetric import rsa
 from typing import TYPE_CHECKING, List
 
 from core.directory import Directory
@@ -83,10 +84,13 @@ class Storage:
                 if not os.path.exists(dst_dir):
                     os.makedirs(dst_dir)
                 shutil.copy(src_file, dst_file)
+        key_path = os.path.join(self.get_repo_path(new_name), 'ssh', 'public_key')
+        os.remove(key_path)
     
     def create_repo(self, repo_name: str) -> None:
         os.makedirs(os.path.join(self.get_repo_path(repo_name), 'repo'))
         os.makedirs(os.path.join(self.get_repo_path(repo_name), 'programs'))
+        os.makedirs(os.path.join(self.get_repo_path(repo_name), 'ssh'))
     
     def get_repo_name(self) -> List[str]:
         return os.listdir(os.path.join(self.root_path, 'repos'))
@@ -97,7 +101,15 @@ class Storage:
     def get_repo_path(self, repo_name: str) -> str:
         return os.path.join(self.root_path, 'repos', repo_name)
     
-    def exist_repo(self, repo_name:str) -> bool:
+    def exist_repo(self, repo_name: str) -> bool:
         return os.path.exists(self.get_repo_path(repo_name))
+    
+    def save_public_key(self, file_path: str, repo_name: str) -> None:
+        dst_path = os.path.join(self.get_repo_path(repo_name), 'ssh', 'public_key')
+        shutil.copy(file_path, dst_path)
+    
+    def load_public_key(self, repo_name: str) -> rsa.RSAPublicKey:
+        key_path = os.path.join(self.get_repo_path(repo_name), 'ssh', 'public_key')
+        return utils.load_public_key(key_path)
 
 storage = Storage()
