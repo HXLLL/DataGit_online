@@ -198,7 +198,7 @@ class Repo:
     def get_init_version_id(self) -> VersionID:
         return self.init_version.id
 
-    def get_version_list(self, _start: VersionID, _end: VersionID) -> List[Version]:
+    def get_version_list(self, _start: VersionID, _end: VersionID) -> List[VersionID]:
         assert _start in self.version_map
         assert _end in self.version_map
         start = self.version_map[_start]
@@ -206,9 +206,9 @@ class Repo:
         res = []
         while end.id != start.id:
             assert end.id != self.init_version.id
-            res.append(end)
+            res.append(end.id)
             end = self.version_map[end.parent]
-        res.append(end)
+        res.append(end.id)
         res.reverse()
         return res
 

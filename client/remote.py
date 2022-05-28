@@ -93,6 +93,7 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
     pickle.dump(vs, f)
     f.flush()
     required_version: List[VersionID] = pickle.load(f)
+    required_version = list(map(lambda v: repo.version_map[v], required_version))
 
     # 8. 9.
     flist = []
