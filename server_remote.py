@@ -70,7 +70,8 @@ class Handler(socketserver.StreamRequestHandler):
             version = Version(None, None, None, None)
             version.load_from_dict(_version)
             version_list.append(version)
-        controller.update_repo(repo_name, branch, version_list)
+        if version_list:
+            controller.update_repo(repo_name, branch, version_list)
 
         # 13.
         with tempfile.TemporaryDirectory() as tmp_dir:
