@@ -4,11 +4,13 @@ import pickle
 import urllib.parse
 import pdb
 import zipfile
+import tempfile
 from typing import TYPE_CHECKING, Tuple, Dict, List
 
 from client.update import Update
 from client.storage import storage
-from core import utils
+from client.stage import Stage
+from core import directory, utils
 if TYPE_CHECKING:
     from repo import Repo
     from version import Version
@@ -59,11 +61,13 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
         4. wait for authentication message (an encrypted random number)
         5. send the decrypted random number
         6. send version list from init to the branch
-        7. wait the server's response required version
+        7. wait the server's response for required version
         8. send file list of required versions
-        9. wait the server's response required file
-        10. send full contents of all files
-        11. send struct for all versions
+        9. wait the server's response for required file
+        10. send program list of required versions
+        11. send full contents of all files
+        12. send struct for all versions
+        13. send all required programs
     """
     s.connect(addr)
     f = s.makefile("rwb")
@@ -76,7 +80,7 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
 
     # 4. 5.
     ciphertext = pickle.load(f)
-    private_key = storage.get_private_key() #TODO
+    private_key = storage.load_private_key()
     msg = utils.decrypt(ciphertext, private_key)
     f.write(msg)
     f.flush()
@@ -96,6 +100,13 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
     required_files: List[str] = pickle.load(f)
 
     # 10.
+    plist = []
+    for v in required_version:
+        plist.extend(v.get_program_list())
+    pickle.dump(plist, f)
+    f.flush()
+
+    # 11.
     wd = utils.get_working_dir()
     for file_hash in required_files:
         filename = storage.get_file(file_hash)
@@ -105,10 +116,20 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
             pickle.dump(c, f)
     f.flush()
     
-    # 11.
+    # 12.
     for v in required_version:
         pickle.dump(v.to_dict(), f)
     f.flush()
+
+    # 13.
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        for p in plist:
+            program_dir = os.path.join(wd, storage.get_transform(p))
+            tmpzip = os.path.join(tmp_dir, 'tmp.zip')
+            utils.get_zip(program_dir, tmpzip) # TODO
+            with open(tmpzip, 'rb') as prog_file:
+                content = prog_file.read()
+                pickle.dump(content, f)
 
 def clone(url: str):
     working_dir = os.getcwd()
@@ -117,29 +138,35 @@ def clone(url: str):
     addr = parse_addr(url)
     uri = parse_uri(url)
 
-    import pdb
-    pdb.set_trace()
     s.connect(addr)
     f = s.makefile("rwb")
     f.write("clone\n".encode('utf-8'))
     f.write(f"{uri}\n".encode('utf-8'))
     f.flush()           
 
-    repo_name = f.readline()
+    repo_name = f.readline().decode('utf-8').strip()
     if os.path.exists(os.path.join(working_dir, repo_name)):
         f.write("repo_exist\n".encode('utf-8'))
     else:
         f.write("OK\n".encode('utf-8'))
 
+    f.flush()
     # recieve .datagit/repo
-    os.makedir(repo_name)
+    print('recieve_repo')
+    os.makedirs(repo_name)
     os.chdir(os.path.join(working_dir, repo_name))
-    repo = storage.load_repo()
+
+    repo = Repo()
+    repo.init()
+
+    stage = Stage()
+    storage.save_stage(stage)
     working_dir = os.path.join(working_dir, repo_name, '.datagit')
     repo.load_from_dict( pickle.load(f) )
-    storage.save_repo()
+    storage.save_repo(repo)
     
     # recieve .datagit/programs
+    print('recieve_programs')
     with open(os.path.join(working_dir, 'tmp.zip'), 'wb') as prog_file:
         prog_file.write( pickle.load(f) )
     
@@ -151,6 +178,7 @@ def clone(url: str):
     os.remove(os.path.join(working_dir, 'tmp.zip'))
 
     # recieve .datagit/data
+    print('recieve_data')
     file_name_list = pickle.load(f)
     for file_name in file_name_list:
         with open(os.path.join(working_dir, 'data', file_name), 'wb') as afile:

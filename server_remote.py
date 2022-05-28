@@ -3,7 +3,9 @@ import pathlib
 import pickle
 import socketserver
 import urllib.parse
+import shutil
 import zipfile
+import tempfile
 from multiprocessing import Process 
 from typing import TYPE_CHECKING, Dict
 
@@ -31,7 +33,7 @@ class Handler(socketserver.StreamRequestHandler):
 
         # 4. 5.
         msg = os.urandom(32)
-        public_key = storage.get_public_key(repo_name) # TODO
+        public_key = storage.load_public_key(repo_name)
         ciphertext = utils.encrypt(msg, public_key)
         pickle.dump(ciphertext, self.wfile)
         self.wfile.flush()
@@ -53,11 +55,14 @@ class Handler(socketserver.StreamRequestHandler):
         self.wfile.flush()
 
         # 10.
+        plist = pickle.load(self.rfile)
+
+        # 11.
         for f in flist:
             content = pickle.load(self.rfile)
             storage.save_file(f, content)
         
-        # 11.
+        # 12.
         version_list = []
         for f in vlist:
             _version: Dict = pickle.load(self.rfile)
@@ -65,6 +70,20 @@ class Handler(socketserver.StreamRequestHandler):
             version.load_from_dict(_version)
             version_list.append(version)
         controller.update_repo(repo_name, branch, version_list)
+
+        # 13.
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            for p in plist:
+                tmpzip = os.path.join(tmp_dir, 'tmp.zip')
+                with open(tmpzip, "wb") as prog_zip:
+                    prog_zip.write(pickle.load(self.rfile))
+                zf = zipfile.ZipFile(tmpzip)
+                prog_dir = os.path.join(tmp_dir, "prog")
+                os.mkdir(prog_dir)
+                zf.extractall(prog_dir)
+                storage.save_transform(repo_name, prog_dir)
+                shutil.rmtree(prog_dir)
+
 
     def get(self) -> None:
         pass
@@ -87,31 +106,29 @@ class Handler(socketserver.StreamRequestHandler):
         self.wfile.write((repo_name + '\n').encode('utf-8'))
         self.wfile.flush()
 
-        if self.wfile.readline() == 'repo_exist':
+        print('recieve_repo_name')
+        if self.rfile.readline().decode('utf-8') == 'repo_exist':
             return
 
         # send repo
-        repo_path = storage.get_repo_path()
+        print('send_repo')
+        repo_path = storage.get_repo_path(repo_name)
         repo = storage.load_repo(repo_name)
         pickle.dump(repo.to_dict(), self.wfile)
         self.wfile.flush()
 
         # send programs
-        def get_zip(dir_path):
-            zip = zipfile.ZipFile(os.path.dir(repo_path, 'tmp.zip'), 'w', zipfile.ZIP_DEFLATED)
-            for path, _, filenames in os.walk(dir_path):
-                fpath = path.replace(dir_path, '')
-                for filename in filenames:
-                    zip.write(os.path.join(path, filename), os.path.join(fpath, filename))
-            zip.close()
+        print('send_program')
         
-        get_zip(os.path.join(repo_path, 'programs'))
-        with open(os.path.join(repo_path, 'tmp.zip'), 'rb') as prog_file:
+        zip_path = os.path.join(repo_path, 'tmp.zip')
+        utils.get_zip(os.path.join(repo_path, 'programs'), zip_path)
+        with open(zip_path, 'rb') as prog_file:
             pickle.dump(prog_file.read(), self.wfile)
             self.wfile.flush()
-        os.remove(os.path.dir(repo_path, 'tmp.zip'))
+        os.remove(zip_path)
 
         # send data
+        # print('send_data')
         file_list = [] # path of files
         file_name_list = [] # hash_value
         for v in repo.versions:
