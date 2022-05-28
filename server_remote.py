@@ -3,7 +3,9 @@ import pathlib
 import pickle
 import socketserver
 import urllib.parse
+import shutil
 import zipfile
+import tempfile
 from multiprocessing import Process 
 from typing import TYPE_CHECKING, Dict
 
@@ -31,7 +33,7 @@ class Handler(socketserver.StreamRequestHandler):
 
         # 4. 5.
         msg = os.urandom(32)
-        public_key = storage.get_public_key(repo_name) # TODO
+        public_key = storage.load_public_key(repo_name)
         ciphertext = utils.encrypt(msg, public_key)
         pickle.dump(ciphertext, self.wfile)
         self.wfile.flush()
@@ -53,11 +55,14 @@ class Handler(socketserver.StreamRequestHandler):
         self.wfile.flush()
 
         # 10.
+        plist = pickle.load(self.rfile)
+
+        # 11.
         for f in flist:
             content = pickle.load(self.rfile)
             storage.save_file(f, content)
         
-        # 11.
+        # 12.
         version_list = []
         for f in vlist:
             _version: Dict = pickle.load(self.rfile)
@@ -65,6 +70,20 @@ class Handler(socketserver.StreamRequestHandler):
             version.load_from_dict(_version)
             version_list.append(version)
         controller.update_repo(repo_name, branch, version_list)
+
+        # 13.
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            for p in plist:
+                tmpzip = os.path.join(tmp_dir, 'tmp.zip')
+                with open(tmpzip, "wb") as prog_zip:
+                    prog_zip.write(pickle.load(self.rfile))
+                zf = zipfile.ZipFile(tmpzip)
+                prog_dir = os.path.join(tmp_dir, "prog")
+                os.mkdir(prog_dir)
+                zf.extractall(prog_dir)
+                storage.save_transform(repo_name, prog_dir)
+                shutil.rmtree(prog_dir)
+
 
     def get(self) -> None:
         pass

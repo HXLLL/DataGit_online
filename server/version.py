@@ -34,7 +34,7 @@ class Version():
         self.id = init_dict['id']
         self.parent = init_dict['parent']
         self.modify_sequence = []
-        for item in init_dict['modmify_sequence']:
+        for item in init_dict['modify_sequence']:
             if item['type'] == 'update':
                 tmp = Update()
                 tmp.load_from_dict(item)

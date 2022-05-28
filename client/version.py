@@ -26,7 +26,7 @@ class Version():
     def to_dict(self):
         modify_sequence_tmp = []
         for item in self.modify_sequence:
-            modify_sequence_tmp.append(item.to_dict)
+            modify_sequence_tmp.append(item.to_dict())
         
         tmp_dict = {
             'id' : self.id,

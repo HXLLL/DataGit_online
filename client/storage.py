@@ -1,6 +1,8 @@
 import os
 import shutil
 import pickle
+from cryptography.hazmat.primitives.asymmetric import rsa
+import platform
 from typing import TYPE_CHECKING
 
 from core.directory import Directory
@@ -210,7 +212,13 @@ class Storage:
         with open(remote_info_file, "r") as rf:
             url = rf.readline()
             return url
-            
+    
+    def load_private_key(self) -> rsa.RSAPrivateKey:
+        keydir = 'C:\\.ssh'
+        if platform.system() == 'Linux':
+            keydir = '/.ssh'
+        key_path = os.path.join(keydir, 'private_key')
+        return utils.load_private_key(key_path)
 
 
 storage = Storage()
