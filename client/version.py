@@ -49,7 +49,7 @@ class Version():
             if item['type'] == 'transform':
                 t = Transform(None, None, None, None, None)
             elif item['type'] == 'update':
-                t = Update(None, None)
+                t = Update([], [])
             t.load_from_dict(item)
             self.modify_sequence.append(t)
     
