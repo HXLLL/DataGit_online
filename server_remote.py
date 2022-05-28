@@ -63,8 +63,6 @@ class Handler(socketserver.StreamRequestHandler):
             content = pickle.load(self.rfile)
             storage.save_file(f, content)
         
-        import pdb
-        pdb.set_trace()
         # 12.
         version_list = []
         for f in vlist:

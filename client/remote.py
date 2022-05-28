@@ -88,7 +88,6 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
 #     f.write(msg)
 #     f.flush()
 
-    pdb.set_trace()
     # 6. 7.
     vs = repo.get_version_list(
         repo.get_init_version_id(), repo.branch_map[branch])
