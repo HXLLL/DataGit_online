@@ -152,7 +152,7 @@ def main():
     parser_branch.add_argument('--name', type=str, help='name of the branch')
     parser_branch.set_defaults(func=func_branch)
 
-    parser_remote = subparsers.add_parser('remote add', help='add a new remote repo')
+    parser_remote = subparsers.add_parser('remote_add', help='add a new remote repo')
     parser_remote.add_argument('--url', type=str, required=True, help='url of remote repo') 
     parser_remote.set_defaults(func=func_remote)
 

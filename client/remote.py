@@ -7,6 +7,7 @@ import zipfile
 import tempfile
 from typing import TYPE_CHECKING, Tuple, Dict, List
 
+from client.repo import Repo
 from client.update import Update
 from client.storage import storage
 from client.stage import Stage
@@ -153,7 +154,10 @@ def clone(url: str):
     f.flush()
     # recieve .datagit/repo
     print('recieve_repo')
-    os.makedirs(repo_name)
+    if os.path.exists(os.path.join(working_dir, repo_name)):
+        raise ValueError('Directory already exist.')
+    else:
+        os.makedirs(repo_name)
     os.chdir(os.path.join(working_dir, repo_name))
 
     repo = Repo()
