@@ -191,3 +191,5 @@ def clone(url: str):
     for file_name in tqdm(file_name_list, desc="Downloading Files"):
         with open(os.path.join(working_dir, 'data', file_name), 'wb') as afile:
             afile.write(pickle.load(f))
+    
+    storage.save_remote(url)
