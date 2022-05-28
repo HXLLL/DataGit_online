@@ -5,6 +5,7 @@ import urllib.parse
 import pdb
 import zipfile
 import tempfile
+import shutil
 from typing import TYPE_CHECKING, Tuple, Dict, List
 
 from client.repo import Repo
@@ -191,4 +192,63 @@ def clone(url: str):
         with open(os.path.join(working_dir, 'data', file_name), 'wb') as afile:
             afile.write(pickle.load(f))
 
-    
+
+def get (url: str, version_id: VersionID):
+    working_dir = os.getcwd()
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    addr = parse_addr(url)
+    uri = parse_uri(url)
+
+    s.connect(addr)
+    f = s.makefile("rwb")
+    f.write("clone\n".encode('utf-8'))
+    f.write(f"{uri}\n".encode('utf-8'))
+    f.write(f"{version_id}".encode('utf-8'))
+    f.flush()
+
+    repo_name = f.readline().decode('utf-8').strip()
+    if os.path.exists(os.path.join(working_dir, repo_name)):
+        f.write("repo_exist\n".encode('utf-8'))
+    else:
+        f.write("OK\n".encode('utf-8'))
+
+    f.flush()
+    # recieve .datagit/repo
+    print('recieve_repo')
+    if os.path.exists(os.path.join(working_dir, repo_name)):
+        raise ValueError('Directory already exist.')
+    else:
+        os.makedirs(repo_name)
+    os.chdir(os.path.join(working_dir, repo_name))
+
+    repo = Repo()
+    repo.init()
+
+    stage = Stage()
+    storage.save_stage(stage)
+    working_dir = os.path.join(working_dir, repo_name, '.datagit')
+    repo.load_from_dict(pickle.load(f))
+    storage.save_repo(repo)
+
+    # recieve .datagit/programs
+    print('recieve_programs')
+    with open(os.path.join(working_dir, 'tmp.zip'), 'wb') as prog_file:
+        prog_file.write(pickle.load(f))
+
+    dst_dir = os.path.join(working_dir, 'programs')
+    zf = zipfile.ZipFile(os.path.join(working_dir, 'tmp.zip'), 'r')
+    for af in zf.namelist():
+        zf.extract(af, dst_dir)
+    zf.close()
+    os.remove(os.path.join(working_dir, 'tmp.zip'))
+
+    # recieve .datagit/data
+    print('recieve_data')
+    file_name_list = pickle.load(f)
+    for file_name in file_name_list:
+        with open(os.path.join(working_dir, 'data', file_name), 'wb') as afile:
+            afile.write(pickle.load(f))
+
+    repo.checkout(version_id, False)
+    shutil.rmtree(os.path.join(working_dir, repo_name, '.datagit'))

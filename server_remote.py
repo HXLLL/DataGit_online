@@ -94,7 +94,64 @@ class Handler(socketserver.StreamRequestHandler):
 
 
     def get(self) -> None:
-        pass
+        uri = self.rfile.readline().decode("utf-8").strip()
+        l = uri.strip('/').split('/')
+        assert len(l) == 1
+        repo_name = l[0]
+        version_id = int(self.rfile.readline().decode("utf-8"))
+
+        '''
+        需要传输的数据:
+            repo_name
+            .datagit/repo
+            .datagit/programs
+            .datagit/data
+        '''
+
+        # send repo_name
+        self.wfile.write((repo_name + '\n').encode('utf-8'))
+        self.wfile.flush()
+
+        print('recieve_repo_name')
+        if self.rfile.readline().decode('utf-8') == 'repo_exist':
+            return
+
+        # send repo
+        print('send_repo')
+        repo_path = storage.get_repo_path(repo_name)
+        repo = storage.load_repo(repo_name)
+        pickle.dump(repo.to_dict(), self.wfile)
+        self.wfile.flush()
+
+        # send programs
+        print('send_program')
+
+        zip_path = os.path.join(repo_path, 'tmp.zip')
+        utils.get_zip(os.path.join(repo_path, 'programs'), zip_path)
+        with open(zip_path, 'rb') as prog_file:
+            pickle.dump(prog_file.read(), self.wfile)
+            self.wfile.flush()
+        os.remove(zip_path)
+
+        # send data
+        # print('send_data')
+        file_list = []  # path of files
+        file_name_list = []  # hash_value
+        need_version = repo.get(version_id)
+        for v in need_version:
+            hash_list = v.get_hash_list()
+            for hash_value in hash_list:
+                file_path = storage.get_file(hash_value)
+                if not file_path in file_list:
+                    file_list.append(file_path)
+                    file_name_list.append(hash_value)
+
+        pickle.dump(file_name_list, self.wfile)
+        self.wfile.flush()
+        for file_path in file_list:
+            with open(file_path, 'rb') as afile:
+                pickle.dump(afile.read(), self.wfile)
+                self.wfile.flush()
 
     def clone(self) -> None:
         uri = self.rfile.readline().decode("utf-8").strip()
@@ -160,7 +217,7 @@ class Handler(socketserver.StreamRequestHandler):
         if command == "push":
             self.push()
         elif command == "get":
-            pass
+            self.get()
         elif command == "clone":
             self.clone()
         else:
