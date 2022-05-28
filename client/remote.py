@@ -82,12 +82,12 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
     f.write(f"{uri}\n".encode('utf-8'))
     f.flush()
 
-#     # 4. 5.
-#     ciphertext = pickle.load(f)
-#     private_key = storage.load_private_key()
-#     msg = utils.decrypt(ciphertext, private_key)
-#     f.write(msg)
-#     f.flush()
+    # 4. 5.
+    ciphertext = pickle.load(f)
+    private_key = storage.load_private_key()
+    msg = utils.decrypt(ciphertext, private_key)
+    f.write(msg)
+    f.flush()
 
     import pdb
     pdb.set_trace()
