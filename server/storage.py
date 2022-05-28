@@ -48,7 +48,6 @@ class Storage:
         with open(file_path, 'wb') as fout:
             fout.write(data)
 
-
     def get_file(self, hash_value: str) -> str:
         """
         given a file's hash value, return its path.
