@@ -115,7 +115,7 @@ def main():
     parser_create.add_argument('name', type=str, help='name of the repo that you create')
     parser_create.set_defaults(func=func_create)
 
-    parser_fork = subparsers.add_parser('fork', help='fork a repo');
+    parser_fork = subparsers.add_parser('fork', help='fork a repo')
     parser_fork.add_argument('old_name', type=str, help='name of the old repo')
     parser_fork.add_argument('new_name', type=str, help='name of the new repo')
     parser_fork.set_defaults(func=func_fork)
