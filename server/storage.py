@@ -18,9 +18,9 @@ class Storage:
         if platform.system() == 'Linux':
             self.root_path = '/var/datagit'
         if not os.path.exists(os.path.join(self.root_path, 'data')):
-            os.makedirs(self.root_path)
+            os.makedirs(os.path.join(self.root_path, 'data'))
         if not os.path.exists(os.path.join(self.root_path, 'repo')):
-            os.makedirs(self.root_path)
+            os.makedirs(os.path.join(self.root_path, 'repo'))
 
     def load_repo(self, repo_name: str) -> 'Repo':
         """
