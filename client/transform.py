@@ -14,7 +14,8 @@ class Transform(Modify):
         self.__script_dir = script_dir  # 绝对
         self.__script_entry = script_entry  # 相对
         self.__script_working_dir = script_working_dir  # 相对
-        self.__id: int = storage.save_transform(script_dir)
+        if script_dir != None:
+            self.__id: int = storage.save_transform(script_dir)
         self.__message = message
 
     def apply(self, working_dir):

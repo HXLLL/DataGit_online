@@ -179,8 +179,8 @@ def clone(url: str):
     
     dst_dir = os.path.join(working_dir, 'programs')
     zf = zipfile.ZipFile(os.path.join(working_dir, 'tmp.zip'), 'r')
-    for f in zf.namelist():
-        zf.extract(f, dst_dir)
+    for af in zf.namelist():
+        zf.extract(af, dst_dir)
     zf.close()
     os.remove(os.path.join(working_dir, 'tmp.zip'))
 
