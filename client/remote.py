@@ -250,7 +250,7 @@ def get (url: str, version_id: VersionID):
     # recieve .datagit/data
     print('recieve_data')
     file_name_list = pickle.load(f)
-    for file_name in file_name_list:
+    for file_name in tqdm(file_name_list, desc="Downloading Files"):
         with open(os.path.join(working_dir, 'data', file_name), 'wb') as afile:
             afile.write(pickle.load(f))
 
