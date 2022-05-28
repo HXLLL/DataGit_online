@@ -72,3 +72,6 @@ class Transform(Modify):
         self.__script_working_dir = d['script_working_dir']
         self.__id = d['id']
         self.__message = d['message']
+
+    def get_id(self):
+        return self.__id

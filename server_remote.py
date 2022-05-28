@@ -3,6 +3,7 @@ import pathlib
 import pickle
 import socketserver
 import urllib.parse
+import pdb
 import shutil
 import zipfile
 import tempfile
@@ -16,7 +17,7 @@ from server.storage import storage
 if TYPE_CHECKING:
     from server.repo import Repo
 
-server_addr = ("localhost", 8887)
+server_addr = ("localhost", 8888)
 
 class Handler(socketserver.StreamRequestHandler):
     def push(self) -> None:
@@ -31,17 +32,17 @@ class Handler(socketserver.StreamRequestHandler):
         assert len(l) == 1
         repo_name = l[0]
 
-        # 4. 5.
-        msg = os.urandom(32)
-        public_key = storage.load_public_key(repo_name)
-        ciphertext = utils.encrypt(msg, public_key)
-        pickle.dump(ciphertext, self.wfile)
-        self.wfile.flush()
-        resp = pickle.load(self.rfile)
-        if msg != resp:
-            print("Authentication Failed")
-            return
-        
+#         # 4. 5.
+#         msg = os.urandom(32)
+#         public_key = storage.load_public_key(repo_name)
+#         ciphertext = utils.encrypt(msg, public_key)
+#         pickle.dump(ciphertext, self.wfile)
+#         self.wfile.flush()
+#         resp = pickle.load(self.rfile)
+#         if msg != resp:
+#             print("Authentication Failed")
+#             return
+#         
         # 6. 7.
         version_list = pickle.load(self.rfile)
         vlist = controller.diff_version(repo_name, version_list)

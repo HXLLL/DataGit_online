@@ -53,3 +53,10 @@ class Version():
                 t = Update(None, None)
             t.load_from_dict(item)
             self.modify_sequence.append(t)
+    
+    def get_program_list(self) -> List[str]:
+        res = []
+        for m in self.modify_sequence:
+            if isinstance(m, Transform):
+                res.append(m.get_id())
+        return res
