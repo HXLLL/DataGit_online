@@ -207,7 +207,7 @@ class Repo:
         while end.id != start.id:
             assert end.id != self.init_version.id
             res.append(end.id)
-            end = end.parent
+            end = self.version_map[end.parent]
         res.append(end.id)
         res.reverse()
         return res

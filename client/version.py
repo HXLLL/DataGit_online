@@ -26,7 +26,7 @@ class Version():
     def to_dict(self):
         modify_sequence_tmp = []
         for item in self.modify_sequence:
-            modify_sequence_tmp.append(item.to_dict())
+            modify_sequence_tmp.append(item.to_dict)
         
         tmp_dict = {
             'id' : self.id,
@@ -38,7 +38,6 @@ class Version():
         return tmp_dict
 
     def load_from_dict(self, d: Dict):
-        print('version__from_dict: ', d)
         self.id = d['id']
         self.parent = d['parent']
         self.message = d['message']
@@ -50,6 +49,13 @@ class Version():
             if item['type'] == 'transform':
                 t = Transform(None, None, None, None, None)
             elif item['type'] == 'update':
-                t = Update(None, None)
+                t = Update([], [])
             t.load_from_dict(item)
             self.modify_sequence.append(t)
+    
+    def get_program_list(self) -> List[str]:
+        res = []
+        for m in self.modify_sequence:
+            if isinstance(m, Transform):
+                res.append(m.get_id())
+        return res

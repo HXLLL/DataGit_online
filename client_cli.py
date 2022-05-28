@@ -83,10 +83,10 @@ def func_remote(args: argparse.Namespace):
     controller.remote_add(args.url)
 
 def func_push(args: argparse.Namespace):
-    if args.b == None and args.a == False:
-        raise ValueError("You should give -v or -b, not neither of them!")
-    if args.b != None and args.a == True:
-        raise ValueError("You should give -v or -b, not both of them!")
+    if args.b == None and not args.a:
+        raise ValueError("You should give -a or -v, not neither of them!")
+    if args.b != None and args.a:
+        raise ValueError("You should give -a or -v, not both of them!")
     if args.b != None:
         controller.push_b(args.b)
     else:
@@ -152,14 +152,14 @@ def main():
     parser_branch.add_argument('--name', type=str, help='name of the branch')
     parser_branch.set_defaults(func=func_branch)
 
-    parser_remote = subparsers.add_parser('remote add', help='add a new remote repo')
+    parser_remote = subparsers.add_parser('remote_add', help='add a new remote repo')
     parser_remote.add_argument('--url', type=str, required=True, help='url of remote repo') 
     parser_remote.set_defaults(func=func_remote)
 
     parser_push = subparsers.add_parser('push', help='push a new branch or the whole repo to a remote repo')
     parser_push.add_argument('-b', type=str, help='the branch you want to push')
     parser_push.add_argument('-a', action='store_true', help='push the whole repo')
-    parser_remote.set_defaults(func=func_push)
+    parser_push.set_defaults(func=func_push)
 
     parser_clone = subparsers.add_parser('clone', help='clone a new repo from a remote repo')
     parser_clone.add_argument('--url', type=str, required=True, help='url of remote repo')

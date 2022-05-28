@@ -3,6 +3,7 @@ import pathlib
 import pickle
 import socketserver
 import urllib.parse
+import pdb
 import shutil
 import zipfile
 import tempfile
@@ -31,17 +32,17 @@ class Handler(socketserver.StreamRequestHandler):
         assert len(l) == 1
         repo_name = l[0]
 
-        # 4. 5.
-        msg = os.urandom(32)
-        public_key = storage.load_public_key(repo_name)
-        ciphertext = utils.encrypt(msg, public_key)
-        pickle.dump(ciphertext, self.wfile)
-        self.wfile.flush()
-        resp = pickle.load(self.rfile)
-        if msg != resp:
-            print("Authentication Failed")
-            return
-        
+#         # 4. 5.
+#         msg = os.urandom(32)
+#         public_key = storage.load_public_key(repo_name)
+#         ciphertext = utils.encrypt(msg, public_key)
+#         pickle.dump(ciphertext, self.wfile)
+#         self.wfile.flush()
+#         resp = pickle.load(self.rfile)
+#         if msg != resp:
+#             print("Authentication Failed")
+#             return
+#         
         # 6. 7.
         version_list = pickle.load(self.rfile)
         vlist = controller.diff_version(repo_name, version_list)
@@ -62,6 +63,8 @@ class Handler(socketserver.StreamRequestHandler):
             content = pickle.load(self.rfile)
             storage.save_file(f, content)
         
+        import pdb
+        pdb.set_trace()
         # 12.
         version_list = []
         for f in vlist:
@@ -69,10 +72,13 @@ class Handler(socketserver.StreamRequestHandler):
             version = Version(None, None, None, None)
             version.load_from_dict(_version)
             version_list.append(version)
-        controller.update_repo(repo_name, branch, version_list)
+        if version_list:
+            controller.update_repo(repo_name, branch, version_list)
 
         # 13.
-        with tempfile.TemporaryDirectory() as tmp_dir:
+
+        tmp_dir = tempfile.mkdtemp()
+        try:
             for p in plist:
                 tmpzip = os.path.join(tmp_dir, 'tmp.zip')
                 with open(tmpzip, "wb") as prog_zip:
@@ -83,6 +89,8 @@ class Handler(socketserver.StreamRequestHandler):
                 zf.extractall(prog_dir)
                 storage.save_transform(repo_name, prog_dir)
                 shutil.rmtree(prog_dir)
+        finally:
+            shutil.rmtree(tmp_dir)
 
 
     def get(self) -> None:
