@@ -109,6 +109,8 @@ class Storage:
     
     def load_public_key(self, repo_name: str) -> rsa.RSAPublicKey:
         key_path = os.path.join(self.get_repo_path(repo_name), 'ssh', 'public_key')
-        return utils.load_public_key(key_path)
+        if os.path.exists(key_path):
+            return utils.load_public_key(key_path)
+        return None
 
 storage = Storage()
