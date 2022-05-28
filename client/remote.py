@@ -7,13 +7,14 @@ import zipfile
 import tempfile
 from typing import TYPE_CHECKING, Tuple, Dict, List
 
+from client.repo import Repo
 from client.update import Update
 from client.storage import storage
 from client.stage import Stage
 from core import directory, utils
+from core.types import VersionID
 if TYPE_CHECKING:
-    from repo import Repo
-    from version import Version
+    from client.version import Version
 
 
 def remote_add(url:str) -> None:
@@ -78,18 +79,20 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
     f.write(f"{uri}\n".encode('utf-8'))
     f.flush()
 
-    # 4. 5.
-    ciphertext = pickle.load(f)
-    private_key = storage.load_private_key()
-    msg = utils.decrypt(ciphertext, private_key)
-    f.write(msg)
-    f.flush()
+#     # 4. 5.
+#     ciphertext = pickle.load(f)
+#     private_key = storage.load_private_key()
+#     msg = utils.decrypt(ciphertext, private_key)
+#     f.write(msg)
+#     f.flush()
 
+    pdb.set_trace()
     # 6. 7.
-    vs = repo.get_version_list(branch)
+    vs = repo.get_version_list(
+        repo.get_init_version_id(), repo.branch_map[branch])
     pickle.dump(vs, f)
     f.flush()
-    required_version: List['Version'] = pickle.load(f)
+    required_version: List[VersionID] = pickle.load(f)
 
     # 8. 9.
     flist = []
