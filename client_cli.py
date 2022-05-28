@@ -83,9 +83,9 @@ def func_remote(args: argparse.Namespace):
     controller.remote_add(args.url)
 
 def func_push(args: argparse.Namespace):
-    if args.b == None and args.a == None:
+    if args.b == None and args.a == False:
         raise ValueError("You should give -v or -b, not neither of them!")
-    if args.b != None and args.a != None:
+    if args.b != None and args.a == True:
         raise ValueError("You should give -v or -b, not both of them!")
     if args.b != None:
         controller.push_b(args.b)
