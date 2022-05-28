@@ -104,7 +104,7 @@ class Storage:
     def exist_repo(self, repo_name: str) -> bool:
         return os.path.exists(self.get_repo_path(repo_name))
     
-    def save_public_key(self, file_path: str, repo_name: str) -> None:
+    def save_public_key(self, repo_name: str, file_path: str) -> None:
         dst_path = os.path.join(self.get_repo_path(repo_name), 'ssh', 'public_key')
         shutil.copy(file_path, dst_path)
     
