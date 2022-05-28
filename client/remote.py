@@ -93,6 +93,7 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
     pickle.dump(vs, f)
     f.flush()
     required_version: List[VersionID] = pickle.load(f)
+    required_version = list(map(lambda v: repo.version_map[v], required_version))
 
     # 8. 9.
     flist = []
@@ -156,7 +157,10 @@ def clone(url: str):
     f.flush()
     # recieve .datagit/repo
     print('recieve_repo')
-    os.makedirs(repo_name)
+    if os.path.exists(os.path.join(working_dir, repo_name)):
+        raise ValueError('Directory already exist.')
+    else:
+        os.makedirs(repo_name)
     os.chdir(os.path.join(working_dir, repo_name))
 
     repo = Repo()
