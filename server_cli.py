@@ -69,11 +69,11 @@ def func_get_repo(args: argparse.Namespace) -> None:
 
 
 def func_create(args: argparse.Namespace) -> None:
-    controller.create(args.name)
+    controller.create(args.name, args.key_file)
 
 
 def func_fork(args: argparse.Namespace) -> None:
-    controller.fork(args.old_name, args.new_name)
+    controller.fork(args.old_name, args.new_name, args.key_file)
 
 
 def main():
@@ -113,11 +113,13 @@ def main():
 
     parser_create = subparsers.add_parser('create', help='create a new repo')
     parser_create.add_argument('name', type=str, help='name of the repo that you create')
+    parser_create.add_argument('--key_file', type=str, help='public key file')
     parser_create.set_defaults(func=func_create)
 
     parser_fork = subparsers.add_parser('fork', help='fork a repo');
     parser_fork.add_argument('old_name', type=str, help='name of the old repo')
     parser_fork.add_argument('new_name', type=str, help='name of the new repo')
+    parser_fork.add_argument('--key_file', type=str, help='public key file')
     parser_fork.set_defaults(func=func_fork)
 
 
