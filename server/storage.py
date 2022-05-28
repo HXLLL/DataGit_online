@@ -14,10 +14,12 @@ if TYPE_CHECKING:
 
 class Storage:
     def __init__(self):
-        self.root_path = 'D:\\datagit'  # 暂时先写死
+        self.root_path = 'C:\\datagit'  # 暂时先写死
         if platform.system() == 'Linux':
             self.root_path = '/var/datagit'
-        if not os.path.exists(self.root_path):
+        if not os.path.exists(os.path.join(self.root_path, 'data')):
+            os.makedirs(self.root_path)
+        if not os.path.exists(os.path.join(self.root_path, 'repo')):
             os.makedirs(self.root_path)
 
     def load_repo(self, repo_name: str) -> 'Repo':
@@ -109,6 +111,8 @@ class Storage:
     
     def load_public_key(self, repo_name: str) -> rsa.RSAPublicKey:
         key_path = os.path.join(self.get_repo_path(repo_name), 'ssh', 'public_key')
-        return utils.load_public_key(key_path)
+        if os.path.exists(key_path):
+            return utils.load_public_key(key_path)
+        return None
 
 storage = Storage()

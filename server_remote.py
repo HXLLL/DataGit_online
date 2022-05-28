@@ -119,19 +119,13 @@ class Handler(socketserver.StreamRequestHandler):
 
         # send programs
         print('send_program')
-        def get_zip(dir_path):
-            zip = zipfile.ZipFile(os.path.join(repo_path, 'tmp.zip'), 'w', zipfile.ZIP_DEFLATED)
-            for path, _, filenames in os.walk(dir_path):
-                fpath = path.replace(dir_path, '')
-                for filename in filenames:
-                    zip.write(os.path.join(path, filename), os.path.join(fpath, filename))
-            zip.close()
         
-        get_zip(os.path.join(repo_path, 'programs'))
-        with open(os.path.join(repo_path, 'tmp.zip'), 'rb') as prog_file:
+        zip_path = os.path.join(repo_path, 'tmp.zip')
+        utils.get_zip(os.path.join(repo_path, 'programs'), zip_path)
+        with open(zip_path, 'rb') as prog_file:
             pickle.dump(prog_file.read(), self.wfile)
             self.wfile.flush()
-        os.remove(os.path.join(repo_path, 'tmp.zip'))
+        os.remove(zip_path)
 
         # send data
         # print('send_data')

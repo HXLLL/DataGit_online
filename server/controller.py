@@ -95,16 +95,17 @@ def get_repo(a: bool, name: str) -> str:
         return repo_info
 
 
-def create(name: str, key_path: str) -> None:
+def create(name: str, key_path: str=None) -> None:
     if storage.exist_repo(name):
         raise ValueError("repository already exists")
     repo = Repo()
     storage.create_repo(name)
     storage.save_repo(name, repo)
-    storage.save_public_key(name, key_path)
+    if key_path is not None:
+        storage.save_public_key(name, key_path)
 
 
-def fork(old_name: str, new_name: str, key_path: str) -> None:
+def fork(old_name: str, new_name: str, key_path: str=None) -> None:
     if not storage.exist_repo(old_name):
         raise ValueError("src repository doesn't exist")
     if storage.exist_repo(new_name):
@@ -113,7 +114,8 @@ def fork(old_name: str, new_name: str, key_path: str) -> None:
     repo = storage.load_repo(new_name)
     repo.parent_id_init(old_name)
     storage.save_repo(new_name, repo)
-    storage.save_public_key(new_name, key_path)
+    if key_path is not None:
+        storage.save_public_key(new_name, key_path)
 
 
 def diff_version(repo_name:str, version_list:str) -> List[VersionID]:
