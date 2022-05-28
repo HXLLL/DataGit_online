@@ -37,10 +37,12 @@ class Version():
         for item in init_dict['modify_sequence']:
             if item['type'] == 'update':
                 tmp = Update()
-                self.modify_sequence.append(tmp.load_from_dict(item))
+                tmp.load_from_dict(item)
+                self.modify_sequence.append(tmp)
             else:
                 tmp = Transform()
-                self.modify_sequence.append(tmp.load_from_dict(item))
+                tmp.load_from_dict(item)
+                self.modify_sequence.append(tmp)
         
         self.message = init_dict['message']
 

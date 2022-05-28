@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 class Storage:
     def __init__(self):
-        self.root_path = 'C:\\datagit'  # 暂时先写死
+        self.root_path = 'D:\\datagit'  # 暂时先写死
         if platform.system() == 'Linux':
             self.root_path = '/var/datagit'
         if not os.path.exists(self.root_path):

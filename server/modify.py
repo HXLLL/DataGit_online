@@ -6,13 +6,6 @@ class Modify(ABC):
         pass
 
     @abstractmethod
-    def apply(self, work_path: str):
-        '''
-        应用update或transform到work_path目录
-        '''
-        pass
-    
-    @abstractmethod
     def to_dict(self):
         pass
 

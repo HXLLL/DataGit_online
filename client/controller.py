@@ -264,7 +264,6 @@ def push_a() -> None:
     pass
 
 def clone(url:str) -> None:
-    init()
     remote.clone(url)
 
 def get(url:str, vid) -> None:

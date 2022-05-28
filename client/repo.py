@@ -219,13 +219,15 @@ class Repo:
         self.versions       = []
         for item in init_dict['versions']:
             tmp = Version(None, None, None, None)
-            self.versions.append(tmp.load_from_dict(item))
+            tmp.load_from_dict(item)
+            self.versions.append(tmp)
         
         self.saved_version  = [1]
 
         self.version_map    = dict()
         for item in init_dict['version_map'].keys():
             tmp = Version(None, None, None, None)
-            self.version_map[item] = tmp.load_from_dict(init_dict['version_map'][item])
+            tmp.load_from_dict(init_dict['version_map'][item])
+            self.version_map[item] = tmp
 
         self.branch_map     = init_dict['branch_map']
