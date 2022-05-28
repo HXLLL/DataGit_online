@@ -31,7 +31,7 @@ class Handler(socketserver.StreamRequestHandler):
 
         # 4. 5.
         msg = os.urandom(32)
-        public_key = storage.get_public_key(repo_name) # TODO
+        public_key = storage.load_public_key(repo_name)
         ciphertext = utils.encrypt(msg, public_key)
         pickle.dump(ciphertext, self.wfile)
         self.wfile.flush()

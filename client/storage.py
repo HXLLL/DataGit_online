@@ -219,7 +219,6 @@ class Storage:
             keydir = '/.ssh'
         key_path = os.path.join(keydir, 'private_key')
         return utils.load_private_key(key_path)
-            
 
 
 storage = Storage()

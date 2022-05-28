@@ -77,7 +77,7 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
 
     # 4. 5.
     ciphertext = pickle.load(f)
-    private_key = storage.get_private_key() #TODO
+    private_key = storage.load_private_key()
     msg = utils.decrypt(ciphertext, private_key)
     f.write(msg)
     f.flush()
