@@ -76,7 +76,9 @@ class Handler(socketserver.StreamRequestHandler):
             controller.update_repo(repo_name, branch, version_list)
 
         # 13.
-        with tempfile.TemporaryDirectory() as tmp_dir:
+
+        tmp_dir = tempfile.mkdtemp()
+        try:
             for p in plist:
                 tmpzip = os.path.join(tmp_dir, 'tmp.zip')
                 with open(tmpzip, "wb") as prog_zip:
@@ -87,6 +89,8 @@ class Handler(socketserver.StreamRequestHandler):
                 zf.extractall(prog_dir)
                 storage.save_transform(repo_name, prog_dir)
                 shutil.rmtree(prog_dir)
+        finally:
+            shutil.rmtree(tmp_dir)
 
 
     def get(self) -> None:
