@@ -45,6 +45,9 @@ class Handler(socketserver.StreamRequestHandler):
 #         
         # 6. 7.
         version_list = pickle.load(self.rfile)
+        branch_ver_id = None
+        if version_list:
+            branch_ver_id = version_list[-1]
         vlist = controller.diff_version(repo_name, version_list)
         pickle.dump(vlist, self.wfile)
         self.wfile.flush()
@@ -70,8 +73,7 @@ class Handler(socketserver.StreamRequestHandler):
             version = Version(None, None, None, None)
             version.load_from_dict(_version)
             version_list.append(version)
-        if version_list:
-            controller.update_repo(repo_name, branch, version_list)
+        controller.update_repo(repo_name, branch, branch_ver_id, version_list)
 
         # 13.
 
