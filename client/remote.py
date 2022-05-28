@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Tuple, Dict, List
 from client.update import Update
 from client.storage import storage
 from client.stage import Stage
+from client.repo import Repo
 from core import utils
 if TYPE_CHECKING:
     from repo import Repo
@@ -118,23 +119,24 @@ def clone(url: str):
     addr = parse_addr(url)
     uri = parse_uri(url)
 
-    import pdb
-    pdb.set_trace()
     s.connect(addr)
     f = s.makefile("rwb")
     f.write("clone\n".encode('utf-8'))
     f.write(f"{uri}\n".encode('utf-8'))
     f.flush()           
 
-    repo_name = f.readline().decode('utf-8')
+    repo_name = f.readline().decode('utf-8').strip()
     if os.path.exists(os.path.join(working_dir, repo_name)):
         f.write("repo_exist\n".encode('utf-8'))
     else:
         f.write("OK\n".encode('utf-8'))
 
+    f.flush()
     # recieve .datagit/repo
+    print('recieve_repo')
     os.makedirs(repo_name)
     os.chdir(os.path.join(working_dir, repo_name))
+
     repo = Repo()
     repo.init()
 
@@ -142,9 +144,10 @@ def clone(url: str):
     storage.save_stage(stage)
     working_dir = os.path.join(working_dir, repo_name, '.datagit')
     repo.load_from_dict( pickle.load(f) )
-    storage.save_repo()
+    storage.save_repo(repo)
     
     # recieve .datagit/programs
+    print('recieve_programs')
     with open(os.path.join(working_dir, 'tmp.zip'), 'wb') as prog_file:
         prog_file.write( pickle.load(f) )
     
@@ -156,6 +159,7 @@ def clone(url: str):
     os.remove(os.path.join(working_dir, 'tmp.zip'))
 
     # recieve .datagit/data
+    print('recieve_data')
     file_name_list = pickle.load(f)
     for file_name in file_name_list:
         with open(os.path.join(working_dir, 'data', file_name), 'wb') as afile:

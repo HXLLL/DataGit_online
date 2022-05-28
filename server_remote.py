@@ -87,18 +87,21 @@ class Handler(socketserver.StreamRequestHandler):
         self.wfile.write((repo_name + '\n').encode('utf-8'))
         self.wfile.flush()
 
-        if self.wfile.readline() == 'repo_exist':
+        print('recieve_repo_name')
+        if self.rfile.readline().decode('utf-8') == 'repo_exist':
             return
 
         # send repo
-        repo_path = storage.get_repo_path()
+        print('send_repo')
+        repo_path = storage.get_repo_path(repo_name)
         repo = storage.load_repo(repo_name)
         pickle.dump(repo.to_dict(), self.wfile)
         self.wfile.flush()
 
         # send programs
+        print('send_program')
         def get_zip(dir_path):
-            zip = zipfile.ZipFile(os.path.dir(repo_path, 'tmp.zip'), 'w', zipfile.ZIP_DEFLATED)
+            zip = zipfile.ZipFile(os.path.join(repo_path, 'tmp.zip'), 'w', zipfile.ZIP_DEFLATED)
             for path, _, filenames in os.walk(dir_path):
                 fpath = path.replace(dir_path, '')
                 for filename in filenames:
@@ -109,9 +112,10 @@ class Handler(socketserver.StreamRequestHandler):
         with open(os.path.join(repo_path, 'tmp.zip'), 'rb') as prog_file:
             pickle.dump(prog_file.read(), self.wfile)
             self.wfile.flush()
-        os.remove(os.path.dir(repo_path, 'tmp.zip'))
+        os.remove(os.path.join(repo_path, 'tmp.zip'))
 
         # send data
+        # print('send_data')
         file_list = [] # path of files
         file_name_list = [] # hash_value
         for v in repo.versions:

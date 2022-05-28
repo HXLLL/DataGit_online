@@ -38,6 +38,7 @@ class Version():
         return tmp_dict
 
     def load_from_dict(self, d: Dict):
+        print('version__from_dict: ', d)
         self.id = d['id']
         self.parent = d['parent']
         self.message = d['message']
