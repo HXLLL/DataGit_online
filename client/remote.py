@@ -86,7 +86,7 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
     ciphertext = pickle.load(f)
     private_key = storage.load_private_key()
     msg = utils.decrypt(ciphertext, private_key)
-    f.write(msg)
+    pickle.dump(msg, f)
     f.flush()
 
     import pdb
@@ -195,6 +195,7 @@ def clone(url: str):
     for file_name in tqdm(file_name_list, desc="Downloading Files"):
         with open(os.path.join(working_dir, 'data', file_name), 'wb') as afile:
             afile.write(pickle.load(f))
+    storage.save_remote(url)
 
 
 def get (url: str, version_id: VersionID):
@@ -204,6 +205,8 @@ def get (url: str, version_id: VersionID):
     addr = parse_addr(url)
     uri = parse_uri(url)
 
+    import pdb
+    pdb.set_trace()
     s.connect(addr)
     f = s.makefile("rwb")
     f.write("clone\n".encode('utf-8'))
@@ -211,7 +214,7 @@ def get (url: str, version_id: VersionID):
     f.write(f"{version_id}".encode('utf-8'))
     f.flush()
 
-    repo_name = f.readline().decode('utf-8').strip()
+    repo_name = f.readline().decode('utf-8').strip() + '_' + str(version_id)
     if os.path.exists(os.path.join(working_dir, repo_name)):
         f.write("repo_exist\n".encode('utf-8'))
     else:
@@ -255,5 +258,4 @@ def get (url: str, version_id: VersionID):
             afile.write(pickle.load(f))
 
     repo.checkout(version_id, False)
-    shutil.rmtree(os.path.join(working_dir, repo_name, '.datagit'))
-    storage.save_remote(url)
+    shutil.rmtree(working_dir)

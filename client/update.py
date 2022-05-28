@@ -21,6 +21,8 @@ class Update(Modify):
         super().__init__()
         self.__add_list: List[Tuple[str, Union[Directory, Blob]]] = add_list
         self.__remove_list: List[Tuple[str, Union[Directory, Blob]]] = remove_list
+        if len(add_list) == 0 and len(remove_list) == 0:
+            return
         # 保存add_list内的文件
         files_n = 0
         for item in self.__add_list:

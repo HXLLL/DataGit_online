@@ -217,7 +217,7 @@ class Storage:
         keydir = 'C:\\.ssh'
         if platform.system() == 'Linux':
             keydir = '/.ssh'
-        key_path = os.path.join(keydir, 'private_key')
+        key_path = os.path.join(keydir, 'id_rsa')
         return utils.load_private_key(key_path)
 
 
