@@ -61,11 +61,11 @@ def func_branch(args: argparse.Namespace):
 
 
 def func_get_repo(args: argparse.Namespace) -> None:
-    if (args.a == False) and (args.v == None):
+    if (args.a == False) and (args.r == None):
         raise ValueError("You should give one of [-a] or [-r repo_name], not none of them")
-    if (args.a == True) and (args.v != None):
+    if (args.a == True) and (args.r != None):
         raise ValueError("You should give one of [-a] or [-r repo_name], not both of them")
-    print(controller.get_repo(args.a, args.v))
+    print(controller.get_repo(args.a, args.r))
 
 
 def func_create(args: argparse.Namespace) -> None:
