@@ -202,7 +202,7 @@ class Storage:
     def save_remote(self, url:str) -> None:
         remote_info_file = os.path.join(utils.get_working_dir(), ".datagit", "remote", "url")
         with open(remote_info_file, "w") as rf:
-            rf.write(str)
+            rf.write(url)
     
     def load_remote(self):
         remote_info_file = os.path.join(utils.get_working_dir(), ".datagit", "remote", "url")
