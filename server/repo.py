@@ -36,7 +36,12 @@ class Repo:
         return Ans
 
     def get_info(self) -> str:
-        return f"fork from {self.__parent_id}"
+        info = ""
+        if self.__parent_id is None:
+            info += "created by user\n"
+        else:
+            info += f"fork from {self.__parent_id}"
+        return info
 
     def to_dict(self) -> dict:
         init_version_tmp = self.init_version.to_dict()

@@ -4,6 +4,7 @@ __pycache__/
 .datagit/
 *.py[cod]
 *$py.class
+frontend/tmp/*
 
 # C extensions
 *.so

@@ -70,10 +70,12 @@ def func_get_repo(args: argparse.Namespace) -> None:
 
 def func_create(args: argparse.Namespace) -> None:
     controller.create(args.name, args.key_file)
+    print(f"Successfully create {args.name}")
 
 
 def func_fork(args: argparse.Namespace) -> None:
     controller.fork(args.old_name, args.new_name, args.key_file)
+    print(f"Successfully fork {args.old_name} to {args.new_name}")
 
 
 def main():

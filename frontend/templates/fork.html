@@ -1,0 +1,28 @@
+<script src="//ajax.lug.ustc.edu.cn/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<form id="form_id" enctype="multipart/form-data" method="post">
+  old_repo: <input id="txt" name="old_repo" type="text"/> <br/>
+  new_repo: <input id="txt" name="new_repo" type="text"/> <br/>
+
+  <input id="key" name="key_file" type="file"/> <br/>
+  <input id="submit" name="submit" type="submit"/>
+</form>
+
+<script type=text/javascript>
+  $("form#form_id").submit(function(e) {
+    e.preventDefault();    
+    var formData = new FormData(this);
+
+    $.ajax({
+        url: '/fork_repo',
+        type: 'POST',
+        data: formData,
+        success: function(data) {
+          alert(data);
+        },
+        cache: false,
+        contentType: false,
+        processData: false
+    });
+  });
+</script>

@@ -88,7 +88,7 @@ def log() -> str:
 def get_repo(a: bool, name: str) -> str:
     if a:
         all_repo = storage.get_repo_name()
-        return all_repo
+        return '\n'.join(all_repo)
     else:
         repo = storage.load_repo(name)
         repo_info = repo.get_info()
