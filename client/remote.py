@@ -2,7 +2,6 @@ import os
 import socket
 import pickle
 import urllib.parse
-import pdb
 import zipfile
 import tempfile
 import shutil
@@ -88,9 +87,6 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
     msg = utils.decrypt(ciphertext, private_key)
     pickle.dump(msg, f)
     f.flush()
-
-    import pdb
-    pdb.set_trace()
 
     # 6. 7.
     vs = repo.get_version_list(
@@ -205,8 +201,6 @@ def get (url: str, version_id: VersionID):
     addr = parse_addr(url)
     uri = parse_uri(url)
 
-    import pdb
-    pdb.set_trace()
     s.connect(addr)
     f = s.makefile("rwb")
     f.write("clone\n".encode('utf-8'))
