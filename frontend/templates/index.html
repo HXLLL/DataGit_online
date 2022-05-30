@@ -1,0 +1,110 @@
+<script src="//ajax.lug.ustc.edu.cn/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<table>
+  <tr>
+    <th>
+      <h2> Create </h2>
+    </th>
+    <th>
+      <h2> Fork </h2>
+    </th>
+  </tr>
+  <tr>
+    <th>
+      <form id="form_create" enctype="multipart/form-data" method="post">
+        <table>
+          <tr>
+            <td>repo_name:</td>
+            <td><input id="create_name" name="repo_name" type="text" /></td>
+          </tr>
+          <br/>
+          <tr>
+            <td>public key:</td>
+            <td><input id="create_key" name="key_file" type="file" /></td>
+          </tr>
+          <tr>
+            <td>
+              <input id="create_submit" name="Create" type="submit"/>
+            </td>
+          </tr>
+        </table>
+      </form>
+    </th>
+    <th>
+      <form id="form_fork" enctype="multipart/form-data" method="post">
+        <table>
+          <tr>
+            <td>old_repo:</td>
+            <td><input id="fork_old" name="old_repo" type="text" /></td>
+          </tr>
+          <br/>
+          <tr>
+            <td>new_repo:</td>
+            <td><input id="fork_new" name="new_repo" type="text" /></td>
+          </tr>
+          <tr>
+            <td>public key</td>
+            <td> <input id="fork_key" name="key_file" type="file"/> </td>
+          </tr>
+          <tr>
+            <td>
+              <input id="fork_submit" name="Fork" type="submit"/>
+            </td>
+          </tr>
+        </table>
+
+      </form>
+    </th>
+  </tr>
+</table>
+
+<h2>
+  Repositories
+</h2>
+
+{% for repo_name in repo_list %}
+<li> 
+  <a href={{ url_for('repo_reponame', repo_name=repo_name) }}>
+    {{ repo_name }} 
+  </a> 
+</li>
+{% endfor %}
+
+<script type=text/javascript>
+  $("form#form_create").submit(function(e) {
+    e.preventDefault();    
+    var formData = new FormData(this);
+
+    $.ajax({
+        url: '/create_repo',
+        type: 'POST',
+        data: formData,
+        success: function(data) {
+          alert(data);
+          location.reload();
+        },
+        cache: false,
+        contentType: false,
+        processData: false
+    });
+  });
+</script>
+
+<script type=text/javascript>
+  $("form#form_fork").submit(function(e) {
+    e.preventDefault();    
+    var formData = new FormData(this);
+
+    $.ajax({
+        url: '/fork_repo',
+        type: 'POST',
+        data: formData,
+        success: function(data) {
+          alert(data);
+        },
+        cache: false,
+        contentType: false,
+        processData: false
+    });
+  });
+</script>

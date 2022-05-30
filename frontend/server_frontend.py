@@ -17,6 +17,17 @@ def index():
     cmd = server_cli + ['get_repo', '-a']
     result = subprocess.run(cmd, stdout=subprocess.PIPE)
     result = result.stdout.decode('utf-8')
+    repo_list = result.strip().split('\n')
+    ctx = {
+        'repo_list': repo_list
+    }
+    return templating.render_template("index.html", **ctx)
+
+@app.route("/get_repo")
+def get_repo():
+    cmd = server_cli + ['get_repo', '-a']
+    result = subprocess.run(cmd, stdout=subprocess.PIPE)
+    result = result.stdout.decode('utf-8')
     repo_list = result.split('\n')
     repo_list = [f'<p><a href="/repo/{s}">{s}</a></p>' for s in repo_list]
     return ('\n'.join(repo_list)).encode('utf-8')
