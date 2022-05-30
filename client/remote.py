@@ -87,6 +87,7 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
     msg = utils.decrypt(ciphertext, private_key)
     pickle.dump(msg, f)
     f.flush()
+    print("Authenticating...")
 
     # 6. 7.
     vs = repo.get_version_list(
@@ -135,6 +136,7 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
             with open(tmpzip, 'rb') as prog_file:
                 content = prog_file.read()
                 pickle.dump(content, f)
+    f.flush()
 
 def clone(url: str):
     working_dir = os.getcwd()
