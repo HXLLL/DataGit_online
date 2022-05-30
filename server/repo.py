@@ -40,16 +40,16 @@ class Repo:
         cur_branches = [k for k, v in self.branch_map.items() if v == cur_id]
         res_branch = "(" + ", ".join(cur_branches) + ")"
         res = prefix + "* %d %s: %s" % (current_version.id, res_branch, current_version.message)
-        res += "\n"
+        res += "<br/>"
 
         child_list = [c for c in self.versions if c.parent == cur_id]
         if len(child_list) == 0:
             return res
         for child in child_list[:-1]:
-            res += prefix + '|\\\n'
-            res += self.__find_log(child, prefix + "| ")
-        res += prefix + ' \\\n'
-        res += self.__find_log(child_list[-1], prefix + '  ')
+            res += prefix + '|\\<br/>'
+            res += self.__find_log(child, prefix + "|&nbsp")
+        res += prefix + '&nbsp\\<br/>'
+        res += self.__find_log(child_list[-1], prefix + '&nbsp&nbsp')
         return res
 
     def log(self) -> str:
@@ -58,10 +58,10 @@ class Repo:
     def get_info(self) -> str:
         info = ""
         if self.__parent_id is None:
-            info += "created by user\n"
+            info += "created by user<br/>"
         else:
-            info += f"fork from {self.__parent_id}\n"
-        info += self.log()
+            info += f"fork from {self.__parent_id}<br/>"
+        info += '<code>' + self.log() + '</code>'
         return info
 
     def to_dict(self) -> dict:
