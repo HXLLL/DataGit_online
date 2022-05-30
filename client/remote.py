@@ -37,7 +37,7 @@ def parse_addr(url: str) -> Tuple[str, int]:
     if len(hp) == 2:
         hostname, port = hp
     else:
-        hostname, port = hp[0], '9999'
+        hostname, port = hp[0], '8887'
     return (hostname, int(port))
 
 def parse_uri(url: str) -> str:

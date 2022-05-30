@@ -35,12 +35,40 @@ class Repo:
                 Ans.append(item)
         return Ans
 
+    def __find_log(self, current_version: Version, prefix: str):
+        cur_id = current_version.id
+        cur_branches = [k for k, v in self.branch_map.items() if v == cur_id]
+        if self.detached_head and self.HEAD == cur_id:
+            cur_branches.append('HEAD')
+        elif not self.detached_head and self.HEAD in cur_branches:
+            idx = cur_branches.index(self.HEAD)
+            cur_branches[idx] = "%s <- HEAD" % self.HEAD
+        res_branch = "(" + ", ".join(cur_branches) + ")"
+        res = prefix + "* %d %s: %s" % (current_version.id, res_branch, current_version.message)
+        if current_version.id in self.saved_version:
+            res += " (saved)"
+        res += "\n"
+
+        child_list = [c for c in self.versions if c.parent == cur_id]
+        if len(child_list) == 0:
+            return res
+        for child in child_list[:-1]:
+            res += prefix + '|\\\n'
+            res += self.__find_log(child, prefix + "| ")
+        res += prefix + ' \\\n'
+        res += self.__find_log(child_list[-1], prefix + '  ')
+        return res
+
+    def log(self) -> str:
+        return self.__find_log(self.init_version, "")
+
     def get_info(self) -> str:
         info = ""
         if self.__parent_id is None:
             info += "created by user\n"
         else:
             info += f"fork from {self.__parent_id}"
+        info += self.log()
         return info
 
     def to_dict(self) -> dict:
