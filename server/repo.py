@@ -60,7 +60,7 @@ class Repo:
         if self.__parent_id is None:
             info += "created by user\n"
         else:
-            info += f"fork from {self.__parent_id}"
+            info += f"fork from {self.__parent_id}\n"
         info += self.log()
         return info
 
