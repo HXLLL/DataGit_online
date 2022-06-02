@@ -33,15 +33,20 @@ class Handler(socketserver.StreamRequestHandler):
         repo_name = l[0]
 
         # 4. 5.
-        msg = os.urandom(32)
         public_key = storage.load_public_key(repo_name)
-        ciphertext = utils.encrypt(msg, public_key)
-        pickle.dump(ciphertext, self.wfile)
-        self.wfile.flush()
-        resp = pickle.load(self.rfile)
-        if msg != resp:
-            print("Authentication Failed")
-            return
+        if not public_key is None:
+            msg = os.urandom(32)
+            ciphertext = utils.encrypt(msg, public_key)
+            pickle.dump(True, self.wfile)
+            pickle.dump(ciphertext, self.wfile)
+            self.wfile.flush()
+            resp = pickle.load(self.rfile)
+            if msg != resp:
+                print("Authentication Failed")
+                return
+        else:
+            pickle.dump(False, self.wfile)
+            self.wfile.flush()
         
         # 6. 7.
         version_list = pickle.load(self.rfile)

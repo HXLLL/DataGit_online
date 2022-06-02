@@ -58,10 +58,13 @@ def background_process_test():
 @app.route('/create_repo', methods=['POST'])
 def create_repo():
     repo_name = flask.request.form['repo_name']
+    cmd = server_cli + ['create', repo_name]
     file = flask.request.files['key_file']
-    filename = os.path.join(tmpdir, str(uuid.uuid4()))
-    file.save(filename)
-    cmd = server_cli + ['create', repo_name, '--key_file', filename]
+    if file.filename != '':
+        filename = os.path.join(tmpdir, str(uuid.uuid4()))
+        file.save(filename)
+        cmd.extend(['--key_file', filename])
+
     result = subprocess.run(cmd, stdout=subprocess.PIPE)
     return result.stdout
 
@@ -70,10 +73,13 @@ def create_repo():
 def fork_repo():
     old_repo = flask.request.form['old_repo']
     new_repo = flask.request.form['new_repo']
+    cmd = server_cli + ['fork', old_repo, new_repo]
     file = flask.request.files['key_file']
-    filename = os.path.join(tmpdir, str(uuid.uuid4()))
-    file.save(filename)
-    cmd = server_cli + ['fork', old_repo, new_repo, '--key_file', filename]
+    if file.filename != '':
+        filename = os.path.join(tmpdir, str(uuid.uuid4()))
+        file.save(filename)
+        cmd.extend(['--key_file', filename])
+
     result = subprocess.run(cmd, stdout=subprocess.PIPE)
     return result.stdout
 

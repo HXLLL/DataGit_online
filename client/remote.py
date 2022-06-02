@@ -82,12 +82,14 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
     f.flush()
 
     # 4. 5.
-    ciphertext = pickle.load(f)
-    private_key = storage.load_private_key()
-    msg = utils.decrypt(ciphertext, private_key)
-    pickle.dump(msg, f)
-    f.flush()
-    print("Authenticating...")
+    use_auth = pickle.load(f)
+    if f:
+        ciphertext = pickle.load(f)
+        private_key = storage.load_private_key()
+        msg = utils.decrypt(ciphertext, private_key)
+        pickle.dump(msg, f)
+        f.flush()
+        print("Authenticating...")
 
     # 6. 7.
     vs = repo.get_version_list(
