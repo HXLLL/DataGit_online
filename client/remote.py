@@ -83,7 +83,7 @@ def push(repo: 'Repo', branch: str, url: str) -> None:
 
     # 4. 5.
     use_auth = pickle.load(f)
-    if f:
+    if use_auth:
         ciphertext = pickle.load(f)
         private_key = storage.load_private_key()
         msg = utils.decrypt(ciphertext, private_key)

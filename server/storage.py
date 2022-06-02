@@ -85,8 +85,10 @@ class Storage:
                 if not os.path.exists(dst_dir):
                     os.makedirs(dst_dir)
                 shutil.copy(src_file, dst_file)
-        key_path = os.path.join(self.get_repo_path(new_name), 'ssh', 'public_key')
-        os.remove(key_path)
+        key_dir = os.path.join(self.get_repo_path(new_name), 'ssh')
+        shutil.rmtree(key_dir)
+        os.mkdir(key_dir)
+        # os.remove(key_path)
     
     def create_repo(self, repo_name: str) -> None:
         os.makedirs(os.path.join(self.get_repo_path(repo_name), 'repo'))

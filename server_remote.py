@@ -1,3 +1,4 @@
+import socket
 import os
 import pathlib
 import pickle
@@ -227,6 +228,11 @@ class Handler(socketserver.StreamRequestHandler):
             self.clone()
         else:
             print(f"{command}: Command Not Exists!")
+
+    def server_bind(self):
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.socket.bind(self.server_address)
+
 
 def main() -> None:
     with socketserver.TCPServer(server_addr, Handler) as s:
