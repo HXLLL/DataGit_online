@@ -5,9 +5,9 @@ import subprocess
 import flask
 from flask import templating
 
-program_dir = '/home/hxl/Repo/DataGit_online'
+program_dir = '/root/DataGit_online'
 tmpdir = os.path.join(program_dir, 'frontend/tmp')
-server_cli = ['/usr/bin/python', 
+server_cli = ['/usr/bin/python3', 
               os.path.join(program_dir, 'server_cli.py'),
              ]
 app = flask.Flask(__name__)
@@ -37,7 +37,12 @@ def get_repo():
 def repo_reponame(repo_name):
     cmd = server_cli + ['get_repo', '-r', repo_name]
     result = subprocess.run(cmd, stdout=subprocess.PIPE)
-    return result.stdout
+    result = result.stdout.decode('utf-8')
+    lines = result.split('\n')
+    content = '<br/>'.join(lines)
+    content = '<code>' + content + '</code>'
+
+    return content.encode('utf-8')
 
 @app.route('/create')
 def create():
@@ -84,4 +89,4 @@ def fork_repo():
     return result.stdout
 
 if __name__ == '__main__':
-    app.run("0.0.0.0",port=8888, debug=True)
+    app.run("165.22.108.162",port=80, debug=True)

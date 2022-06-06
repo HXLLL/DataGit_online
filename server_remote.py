@@ -18,7 +18,7 @@ from server.storage import storage
 if TYPE_CHECKING:
     from server.repo import Repo
 
-server_addr = ("localhost", 8887)
+server_addr = ("165.22.108.162", 8887)
 
 class Handler(socketserver.StreamRequestHandler):
     def push(self) -> None:

@@ -78,7 +78,7 @@ def decrypt(ciphertext: bytes, private_key: rsa.RSAPrivateKey) -> bytes:
 
 def load_public_key(filename: str) -> rsa.RSAPublicKey:
     with open(filename, "rb") as f:
-        return serialization.load_ssh_public_key(f.read())
+        return serialization.load_ssh_public_key(f.read(), backend=None)
 
 
 def load_private_key(filename: str, passwd: bytes=b''):
