@@ -10,7 +10,7 @@ from server import controller
 
 def acquire_lock() -> FileLock:
     lockdir = "C:\\tmp"
-    if platform.system() == 'Linux':
+    if platform.system() in ['Linux', 'Darwin']:
         lockdir = '/tmp'
     if not os.path.isdir(lockdir):
         lockdir = "C:\\Temp"
